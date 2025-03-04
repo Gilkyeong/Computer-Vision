@@ -19,3 +19,4 @@
 - 선택한 영역만 따로 저장하거나 표시
 
 실행결과
+![image](https://github.com/user-attachments/assets/235df943-48de-49b3-8a72-ee39967e0764)
