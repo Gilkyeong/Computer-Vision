@@ -7,6 +7,7 @@
 
 ![image](https://github.com/user-attachments/assets/233b22d6-aff2-490e-abff-1f231ca3de13)
 
+
 ## 문제 2 웹캠 영상에서 에지 검출
 설명
 - 웹캠을 사용하여 실시간 비디오 스트림을 가져옴
@@ -14,7 +15,8 @@
 
 실행 결과
 
-![Uploading image.png…]()
+![image](https://github.com/user-attachments/assets/c3322dd8-424c-4fc1-8d30-c4d293a28795)
+
 
 ## 문제 3 마우스로 영역 선택 및 ROI 추출
 설명
@@ -24,3 +26,4 @@
 실행결과
 
 ![image](https://github.com/user-attachments/assets/235df943-48de-49b3-8a72-ee39967e0764)
+
