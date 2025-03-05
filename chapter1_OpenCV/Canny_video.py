@@ -18,11 +18,11 @@ while True:
 
     edges = cv.Canny(gray, 100, 200)
 
-    edges_3ch = cv.cvtColor(edges, cv.COLOR_GRAY2BGR)
+    canny_edges = cv.cvtColor(edges, cv.COLOR_GRAY2BGR)
 
-    stacked = np.hstack((frame, edges_3ch))
+    reslut = np.hstack((frame, canny_edges))
 
-    cv.imshow('CANNY VIDEO', stacked)
+    cv.imshow('CANNY VIDEO', reslut)
 
     if cv.waitKey(1) == ord('q'):
         break
