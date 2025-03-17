@@ -5,7 +5,7 @@
 
 코드 
 - Grayscale.py
-'''python
+```python
 import cv2 as cv
 import sys
 import numpy as np
@@ -27,7 +27,7 @@ cv.imshow('Color and Grayscale Image', imgs)
 
 cv.waitKey(0)
 cv.destroyAllWindows()
-'''
+```
 
 실행 결과
 
