@@ -30,7 +30,7 @@ cv.waitKey(0)
 cv.destroyAllWindows()
 ```
 
-#### image 불러오기
+#### 이미지 불러오기
 ```python
 img = cv.imread('soccer.jpg') 
 
@@ -40,12 +40,21 @@ if img is None:
 기본적으로 BGR 형식으로 저장
 이미지 파일의 경로를 확인하여 불러옴
 
-#### image grayscale 변환
+#### grayscale 이미지 변환
 ```python
-gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY) 
+gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+cv.imwrite('soccer_gray.jpg', gray)  
+```
+cv.cvtColor() 함수는 이미지 색상 공간을 변환
+cv.COLOR_BGR2GRAY를 사용하여 BGR 이미지를 grayscale로 변환
+cv.imwrite()를 사용하여 변환된 grayscale 이미지를 .JPG 파일로 저장
+
+#### grayscale 이미지를 3채널로 변환
+```python
+gray_3ch = cv.cvtColor(gray, cv.COLOR_GRAY2BGR)
 ```
 
-실행 결과
+### 실행 결과
 
 ![image](https://github.com/user-attachments/assets/233b22d6-aff2-490e-abff-1f231ca3de13)
 
