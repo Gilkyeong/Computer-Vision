@@ -28,7 +28,7 @@ cv.imshow('Color and Grayscale Image', imgs)
 cv.waitKey(0)
 cv.destroyAllWindows()
 ```
-<br><br> 
+
 **1️⃣ 이미지 불러오기**
 ```python
 img = cv.imread('soccer.jpg') 
@@ -105,7 +105,7 @@ while True:
 cap.release()
 cv.destroyAllWindows()
 ```
-<br><br> 
+
 **1️⃣ 이미지 불러오기**
 ```python
 img = cv.imread('soccer.jpg') 
@@ -205,7 +205,7 @@ while True:
 
 cv.destroyAllWindows()
 ```
-<br><br> 
+
 **1️⃣ 이미지 불러오기**
 ```python
 img = cv.imread('soccer.jpg') 
