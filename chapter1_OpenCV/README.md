@@ -52,8 +52,6 @@ cv.cvtColor() 함수는 이미지 색상 공간을 변환
 
 cv.COLOR_BGR2GRAY를 사용하여 BGR 이미지를 grayscale로 변환
 
-cv.imwrite()를 사용하여 변환된 grayscale 이미지를 .JPG 파일로 저장
-
 
 **grayscale 이미지를 3채널로 변환**
 ```python
