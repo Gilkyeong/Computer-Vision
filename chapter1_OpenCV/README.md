@@ -63,7 +63,7 @@ imgs = np.hstack((img, gray_3ch))
 ### :octocat: 실행 결과
 
 ![image](https://github.com/user-attachments/assets/233b22d6-aff2-490e-abff-1f231ca3de13)
-<br>
+<br><br>
 
 ## 🌀 문제 2 웹캠 영상에서 에지 검출
 
@@ -128,7 +128,7 @@ cv.imwrite('soccer_gray.jpg', gray)
 ### :octocat: 실행 결과
 
 ![image](https://github.com/user-attachments/assets/c3322dd8-424c-4fc1-8d30-c4d293a28795)
-<br>
+<br><br>
 
 ## 🌀 문제 3 마우스로 영역 선택 및 ROI 추출
 설명
