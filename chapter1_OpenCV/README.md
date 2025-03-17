@@ -41,7 +41,8 @@ if img is None:
 
 ✅ 이미지 파일의 경로를 확인하여 불러옴
 
-----
+
+
 
 **2️⃣ grayscale 이미지 변환**
 ```python
@@ -53,6 +54,8 @@ cv.imwrite('soccer_gray.jpg', gray)
 ✅ cv.COLOR_BGR2GRAY를 사용하여 BGR 이미지를 grayscale로 변환
 
 
+
+
 **3️⃣ grayscale 이미지를 3채널로 변환**
 ```python
 gray_3ch = cv.cvtColor(gray, cv.COLOR_GRAY2BGR)
@@ -60,11 +63,15 @@ gray_3ch = cv.cvtColor(gray, cv.COLOR_GRAY2BGR)
 ✅ cv.COLOR_GRAY2BGR를 사용하여 흑백 이미지를 BGR 3채널 형식으로 변환
 
 
+
+
 **4️⃣ 원본 이미지와 변환된 이미지 나란히 붙이기**
 ```python
 imgs = np.hstack((img, gray_3ch))
 ```
 ✅ np.hstack() 이미지를 가로로 붙이는 함수
+
+
 
 
 ### :octocat: 실행 결과
