@@ -39,8 +39,7 @@ if img is None:
 ```
 ✅ 기본적으로 BGR 형식으로 저장 <br>
 ✅ 이미지 파일의 경로를 확인하여 불러옴
-<br> <br>
-
+<br>
 **2️⃣ grayscale 이미지 변환**
 ```python
 gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
