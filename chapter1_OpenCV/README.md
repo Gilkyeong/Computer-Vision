@@ -1,10 +1,11 @@
 ## 문제 1 이미지 불러오기 및 그레이스케일 변환
 설명
-- Opencv를 사용하여 이미지를 불러오고 화면에 출력
-- 원본 이미지와 그레이스케일로 변환된 이미지를 나란히 표시
+- Opencv를 사용하여 RGB 이미지를 불러온 후 그레이스케일로 변환
+- 원본 이미지와 그레이스케일로 변환된 이미지를 가로로 나란히 붙여서 화면에 출력
 
 코드 
 - Grayscale.py
+
 ```python
 import cv2 as cv
 import sys
@@ -27,6 +28,21 @@ cv.imshow('Color and Grayscale Image', imgs)
 
 cv.waitKey(0)
 cv.destroyAllWindows()
+```
+
+image 불러오기
+```python
+img = cv.imread('soccer.jpg') 
+
+if img is None:
+    sys.exit('파일을 찾을 수 없습니다.')
+```
+기본적으로 BGR 형식으로 저장
+이미지 파일의 경로를 확인하여 불러옴
+
+image grayscale 변환
+```python
+gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY) 
 ```
 
 실행 결과
