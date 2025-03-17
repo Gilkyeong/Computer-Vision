@@ -41,6 +41,7 @@ if img is None:
 
 ✅ 이미지 파일의 경로를 확인하여 불러옴
 
+----
 
 **2️⃣ grayscale 이미지 변환**
 ```python
