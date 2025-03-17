@@ -45,8 +45,8 @@ if img is None:
 gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 cv.imwrite('soccer_gray.jpg', gray)  
 ```
-🔸 cv.cvtColor() 함수는 이미지 색상 공간을 변환 <br>
-🔸 cv.COLOR_BGR2GRAY를 사용하여 BGR 이미지를 grayscale로 변환
+🔹 cv.cvtColor() 함수는 이미지 색상 공간을 변환 <br>
+🔹 cv.COLOR_BGR2GRAY를 사용하여 BGR 이미지를 grayscale로 변환
 <br><br>
 **3️⃣ grayscale 이미지를 3채널로 변환**
 ```python
