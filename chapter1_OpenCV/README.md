@@ -31,6 +31,7 @@ cv.destroyAllWindows()
 ```
 
 #### 이미지 불러오기
+**이미지 불러오기**
 ```python
 img = cv.imread('soccer.jpg') 
 
