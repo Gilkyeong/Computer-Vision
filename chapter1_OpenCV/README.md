@@ -1,9 +1,9 @@
-### 문제 1 이미지 불러오기 및 그레이스케일 변환
-설명
+## 문제 1 이미지 불러오기 및 그레이스케일 변환
+####설명
 - Opencv를 사용하여 RGB 이미지를 불러온 후 그레이스케일로 변환
 - 원본 이미지와 그레이스케일로 변환된 이미지를 가로로 나란히 붙여서 화면에 출력
 
-코드 
+####코드 
 - Grayscale.py
 
 ```python
@@ -30,7 +30,7 @@ cv.waitKey(0)
 cv.destroyAllWindows()
 ```
 
-image 불러오기
+#####image 불러오기
 ```python
 img = cv.imread('soccer.jpg') 
 
