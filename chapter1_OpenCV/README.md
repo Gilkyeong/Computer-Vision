@@ -37,12 +37,9 @@ img = cv.imread('soccer.jpg')
 if img is None:
     sys.exit('파일을 찾을 수 없습니다.')
 ```
-✅ 기본적으로 BGR 형식으로 저장
-
+✅ 기본적으로 BGR 형식으로 저장 <br>
 ✅ 이미지 파일의 경로를 확인하여 불러옴
-
-
-
+<br> <br>
 
 **2️⃣ grayscale 이미지 변환**
 ```python
