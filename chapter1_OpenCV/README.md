@@ -38,6 +38,7 @@ if img is None:
     sys.exit('파일을 찾을 수 없습니다.')
 ```
 기본적으로 BGR 형식으로 저장
+
 이미지 파일의 경로를 확인하여 불러옴
 
 **grayscale 이미지 변환**
@@ -48,6 +49,7 @@ cv.imwrite('soccer_gray.jpg', gray)
 cv.cvtColor() 함수는 이미지 색상 공간을 변환
 
 cv.COLOR_BGR2GRAY를 사용하여 BGR 이미지를 grayscale로 변환
+
 cv.imwrite()를 사용하여 변환된 grayscale 이미지를 .JPG 파일로 저장
 
 **grayscale 이미지를 3채널로 변환**
@@ -55,6 +57,7 @@ cv.imwrite()를 사용하여 변환된 grayscale 이미지를 .JPG 파일로 저
 gray_3ch = cv.cvtColor(gray, cv.COLOR_GRAY2BGR)
 ```
 cv.COLOR_GRAY2BGR를 사용하여 흑백 이미지를 BGR 3채널 형식으로 변환
+
 그레이스케일 이미지는 밝기 값만 저장된 1채널이기 때문에 원본 컬러 이미지와 병합하기 위해서 3차원 변환을 통해 차원을 맞춰줘야함
 
 **원본 이미지와 변환된 이미지 나란히 붙이기**
