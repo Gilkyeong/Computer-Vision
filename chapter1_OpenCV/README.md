@@ -8,6 +8,8 @@
 
 ### 📄 코드 
 - Grayscale.py
+
+*전체 코드*
 ```python
 import cv2 as cv
 import sys
@@ -31,7 +33,7 @@ cv.imshow('Color and Grayscale Image', imgs)
 cv.waitKey(0)
 cv.destroyAllWindows()
 ```
-
+*핵심 코드* <br>
 **🔷 grayscale 이미지 변환**
 ```python
 gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
