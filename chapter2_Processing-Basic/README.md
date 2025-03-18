@@ -36,24 +36,29 @@ plt.show()
 *핵심코드* <br>
 **🔷 grayscale 이미지 변환**
 ```python
-gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-cv.imwrite('soccer_gray.jpg', gray)  
+gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
 ```
-🔹 cv.cvtColor() 함수는 이미지 색상 공간을 변환 <br>
-🔹 cv.COLOR_BGR2GRAY를 사용하여 BGR 이미지를 grayscale로 변환
+🔹 이진화 처리를 위해서 BGR 이미지를 Grayscale 이미지로 변환 <br>
 <br><br>
-**🔷 grayscale 이미지를 3채널로 변환**
+**🔷 이진화 처리**
 ```python
-gray_3ch = cv.cvtColor(gray, cv.COLOR_GRAY2BGR)
+threshold = 127
+_, binary = cv.threshold(gray, threshold, 255, cv.THRESH_BINARY)
 ```
-🔹 cv.COLOR_GRAY2BGR를 사용하여 흑백 이미지를 BGR 3채널 형식으로 변환
+🔹 임곗값 127을 기준으로 pixel 값을 이진화 <br>
+🔹 cv.threshold(input_image, threshold, max, cv.THRESH_BINARY)
 <br><br>
-**🔷 원본 이미지와 변환된 이미지 나란히 붙이기**
+**🔷 히스토그램 계산**
 ```python
-imgs = np.hstack((img, gray_3ch))
+hist = cv.calcHist([binary], [0], None, [256], [0, 256])
 ```
-🔹 np.hstack() 이미지를 가로로 붙이는 함수
-<br><br>
+🔹 cv.calcHist() 함수로 이진화된 이미지의 히스토그램 계산 <br>
+🔹[binary]: 입력 이미지 <br>
+🔹[0]: 첫 번째 채널(Grayscale) <br>
+🔹None: 마스크 사용 안 함 <br>
+🔹[256]: 히스토그램의 빈(bin) 개수 <br>
+🔹[0, 256]: 픽셀 값의 범위 (0~255)
+🔹<br><br>
 
 ### :octocat: 실행 결과
 
