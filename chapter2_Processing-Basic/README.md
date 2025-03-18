@@ -33,7 +33,7 @@ plt.ylabel('Frequency')
 plt.show()
 
 ```
-*핵심코드*
+*핵심코드* <br>
 **🔷 grayscale 이미지 변환**
 ```python
 gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
@@ -71,41 +71,31 @@ imgs = np.hstack((img, gray_3ch))
 ![image](https://github.com/user-attachments/assets/895d246b-c5c5-43ae-b548-48df049b97a4)
 
 ### 📄 코드 
-- Canny_video.py
+- Morphology.py
+
+*전체 코드*
 ```python
 import cv2 as cv
-import sys
 import numpy as np
+import matplotlib.pyplot as plt
 
-cap = cv.VideoCapture(0, cv.CAP_DSHOW)  
+image = cv.imread('JohnHancocksSignature.png', cv.IMREAD_GRAYSCALE)  
 
-if not cap.isOpened():
-    sys.exit('카메라 연결 실패')
+kernel = cv.getStructuringElement(cv.MORPH_RECT, (5, 5))
 
-while True:
-    ret, frame = cap.read() 
+Dilation = cv.morphologyEx(image, cv.MORPH_DILATE, kernel)
+Erosion = cv.morphologyEx(image, cv.MORPH_ERODE, kernel)
+Open = cv.morphologyEx(image, cv.MORPH_OPEN, kernel)
+Close = cv.morphologyEx(image, cv.MORPH_CLOSE, kernel)
 
-    if not ret:
-        print('프레임 획득에 실패하여 루프를 나갑니다.')
-        break
-
-    gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
-
-    edges = cv.Canny(gray, 100, 200)
-
-    canny_edges = cv.cvtColor(edges, cv.COLOR_GRAY2BGR)
-
-    reslut = np.hstack((frame, canny_edges))
-
-    cv.imshow('CANNY VIDEO', reslut)
-
-    if cv.waitKey(1) == ord('q'):
-        break
-
-cap.release()
+result = np.hstack((image, Dilation, Erosion, Open, Close))
+cv.imshow('Binary | Dilation | Erosion | Opening | Closing', result)
+cv.imwrite('morphology_result.png', result)
+cv.waitKey(0)
 cv.destroyAllWindows()
 ```
 
+*핵심 코드* <br>
 **🔷 grayscale 이미지 변환**
 ```python
  gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
@@ -139,73 +129,40 @@ reslut = np.hstack((frame, canny_edges))
 ---
 
 ### 📄 코드 
-- ROI_print.py
+- Bilinear_Interpolation.py
+
+*전체 코드*
 ```python
 import cv2 as cv
-import sys
 import numpy as np
+import matplotlib.pyplot as plt
 
-img = cv.imread('soccer.jpg') 
+img = cv.imread("rose.png")
 
-if img is None:
-    sys.exit('파일을 찾을 수 없습니다.')
+rows, cols = img.shape[:2]
 
-clone = img.copy()  
-roi = None
-start_x, start_y, end_x, end_y = -1, -1, -1, -1 
-drawing = False
+angle = 45
+scale = 1.5
+M = cv.getRotationMatrix2D((cols / 2, rows / 2), angle, scale)
 
-def draw_rectangle(event, x, y, flags, param):
-    global start_x, start_y, end_x, end_y, drawing, roi, img
+new_cols, new_rows = int(cols * 1.5), int(rows * 1.5)
 
-    if event == cv.EVENT_LBUTTONDOWN:
-        start_x, start_y = x, y
-        drawing = True  # 드래그 시작
+rotated_scaled_img = cv.warpAffine(img, M, (new_cols, new_rows), flags=cv.INTER_LINEAR)
 
-    elif event == cv.EVENT_MOUSEMOVE: 
-        if drawing: 
-            temp_img = img.copy()
-            cv.rectangle(temp_img, (start_x, start_y), (x, y), (0, 255, 0), 2)
-            cv.imshow('Image', temp_img)
-
-    elif event == cv.EVENT_LBUTTONUP:  #마우스 버튼을 놓았을 때
-        end_x, end_y = x, y
-        drawing = False  #드래그 종료
-
-        x1, y1, x2, y2 = min(start_x, end_x), min(start_y, end_y), max(start_x, end_x), max(start_y, end_y)
-
-        # ROI 추출
-        roi = clone[y1:y2, x1:x2].copy()
-        
-        cv.rectangle(img, (x1, y1), (x2, y2), (0, 0, 255), 2)
-        cv.imshow('Image', img)
-
-        if roi.size > 0:
-            cv.imshow('ROI_image', roi)
-
-cv.namedWindow('Image')
-cv.setMouseCallback('Image', draw_rectangle)
-cv.imshow('Image', img)
-
-while True:
-    key = cv.waitKey(1)
-
-    if key == ord('r'):
-        img = clone.copy()
-        roi = None
-        cv.imshow('Image', img)
-        cv.destroyWindow('ROI_image') 
-
-    elif key == ord('s') and roi is not None:
-        cv.imwrite('ROI_image.jpg', roi)
-        print('이미지가 저장되었습니다.')
-
-    elif key == ord('q'):  # 종료
-        break
-
-cv.destroyAllWindows()
+plt.figure(figsize=(10, 5))
+plt.subplot(1, 2, 1)
+plt.imshow(cv.cvtColor(img, cv.COLOR_BGR2RGB))
+plt.title("Original")
+plt.axis("off")   
+plt.subplot(1, 2, 2)
+plt.imshow(cv.cvtColor(rotated_scaled_img, cv.COLOR_BGR2RGB))
+plt.title("Result")
+plt.axis("off")
+    
+plt.show()
 ```
 
+*핵심 코드* <br>
 **🔷 변수 초기화**
 ```python
 clone = img.copy()  
