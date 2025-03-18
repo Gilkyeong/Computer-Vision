@@ -33,7 +33,7 @@ cv.imshow('Color and Grayscale Image', imgs)
 cv.waitKey(0)
 cv.destroyAllWindows()
 ```
-*핵심 코드* <br><br>
+<br>*핵심 코드* <br>
 **🔷 grayscale 이미지 변환**
 ```python
 gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
@@ -108,7 +108,7 @@ cap.release()
 cv.destroyAllWindows()
 ```
 
-*핵심 코드* <br><br>
+<br>*핵심 코드* <br>
 **🔷 grayscale 이미지 변환**
 ```python
  gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
@@ -211,7 +211,7 @@ while True:
 cv.destroyAllWindows()
 ```
 
-*핵심 코드* <br><br>
+<br>*핵심 코드* <br>
 **🔷 변수 초기화**
 ```python
 clone = img.copy()  
