@@ -38,7 +38,7 @@ plt.show()
 ```python
 gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
 ```
-🔹 이진화 처리를 위해서 BGR 이미지를 Grayscale 이미지로 변환 <br>
+🔹 이진화 처리를 위해서 BGR 이미지를 Grayscale 이미지로 변환
 <br><br>
 **🔷 이진화 처리**
 ```python
@@ -114,28 +114,54 @@ cv.destroyAllWindows()
 ```
 
 *핵심 코드* <br>
-**🔷 grayscale 이미지 변환**
+**🔷 Otsu 알고리즘을 사용하여 이진화**
 ```python
- gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+_, b_image = cv.threshold(image[:, :, 3], 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
 ```
-🔹 cv.cvtColor() 함수에서 cv.COLOR_BGR2GRAY를 사용하여 BGR 이미지를 grayscale로 변환 <br>
-🔹 Canny edge 검출은 일반적으로 흑백 이미지에서 수행
+🔹 image[:, :, 3]: **알파 채널(투명도)**을 기준으로 이진화 <br>
+🔹 cv.threshold()로 Otsu 알고리즘을 사용해 자동으로 최적의 임계값 설정하여 이진화
 <br><br>
-**🔷 Canny edge 검출**
+**🔷 이미지 일부 선택**
 ```python
-edges = cv.Canny(gray, 100, 200)
+binary = b_image[b_image.shape[0] // 2:b_image.shape[0], 0:b_image.shape[0] // 2 + 1]
 ```
-🔹 cv.Canny(image, threshold1, threshold2) : Canny 알고리즘 <br>
-🔹 threshold1,2 : edge를 검출할 강도 값 설정
+🔹 이미지 하단 왼쪽 부분 선택 <br>
 <br><br>
-**🔷 Canny edge 이미지를 3차원으로 변환 후 원본 이미지와 가로로 연결**
+**🔷 구조요소 정의**
 ```python
-canny_edges = cv.cvtColor(edges, cv.COLOR_GRAY2BGR)
-reslut = np.hstack((frame, canny_edges))
+se = np.uint8([[0, 0, 1, 0, 0],
+               [0, 1, 1, 1, 0],
+               [1, 1, 1, 1, 1],
+               [0, 1, 1, 1, 0],
+               [0, 0, 1, 0, 0]])
 ```
-🔹 원본 이미지와 나란히 출력하기 위해 Canny edge 이미지를 3차원 변환 <br>
-🔹 np.hstack()으로 두 이미지를 가로로 이어 붙여 출력
-
+🔹 형태학적 연산을 수행할 때 사용할 kernel 정의 <br>
+🔹 다이아몬드 형태의 kernel을 사용하여 연산 수행
+<br><br>
+**🔷 Dilation**
+```python
+Dilation = cv.dilate(binary, se, iterations=1)
+```
+🔹 밝은 영역(흰색) 확대 → 노이즈 제거, 선 굵게 만듦 <br>
+<br><br>
+**🔷 Erosion**
+```python
+Erosion = cv.erode(binary, se, iterations=1)
+```
+🔹 어두운 영역(검은색) 확대 → 얇은 선 더 얇게 만듦 <br>
+<br><br>
+**🔷 Close**
+```python
+Close = cv.morphologyEx(binary, cv.MORPH_CLOSE, se)
+```
+🔹 팽창 후 침식 수행 <br>
+<br><br>
+**🔷 Open**
+```python
+Open = cv.morphologyEx(binary, cv.MORPH_OPEN, se)
+```
+🔹 침식 후 팽창 수행 <br>
+<br><br>
 ### :octocat: 실행 결과
 
 ![image](https://github.com/user-attachments/assets/2803c11a-86b9-4e59-aa95-f7e252c12312)
