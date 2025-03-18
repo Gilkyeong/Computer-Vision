@@ -65,7 +65,7 @@ imgs = np.hstack((img, gray_3ch))
 
 ### Canny edge
 - gradient 크기를 구하여 임계값 설정 후 edge 검출하면 윤곽선이 두껍게 표현되는 문제점을 해결
-- 비최대 억제를 사용하여 edge 검출 후 edge의 굵기를 얇게 유지
+- 비최대 억제를 사용하여 edge 검출 후 edge의 굵기를 얇게 유지 <br>
 ![image](https://github.com/user-attachments/assets/895d246b-c5c5-43ae-b548-48df049b97a4)
 
 ### 📄 코드 
@@ -132,9 +132,6 @@ reslut = np.hstack((frame, canny_edges))
 <br><br>
 
 ## 🌀 문제 3 마우스로 영역 선택 및 ROI 추출
-설명
-- 이미지를 불러오고 사용자가 마우스로 클릭하고 드래그하여 ROI 선택
-- 선택한 영역만 따로 저장하거나 표시
 
 > 이미지를 불러와 사용자가 마우스를 제어하여 **ROI 선택 후 선택한 영역만 따로 저장하거나 표시**
 ---
@@ -207,23 +204,38 @@ while True:
 cv.destroyAllWindows()
 ```
 
-**1️⃣ 이미지 불러오기**
+**🔷 변수 초기화**
 ```python
-img = cv.imread('soccer.jpg') 
-
-if img is None:
-    sys.exit('파일을 찾을 수 없습니다.')
+clone = img.copy()  
+roi = None
+start_x, start_y, end_x, end_y = -1, -1, -1, -1 
+drawing = False
 ```
-🔹 기본적으로 BGR 형식으로 저장 <br>
-🔹 이미지 파일의 경로를 확인하여 불러옴
+🔹 clone : 원본 이미지를 보존하기 위한 복사본 <br>
+🔹 roi : 선택한 Region of Interest <br>
+🔹 start_x,y / end_x,y : 마우스 드래그 시작 및 종료 좌표 <br>
+🔹 drawing : 마우스 드래그 여부를 나타냄 <br>
 <br><br>
-**2️⃣ grayscale 이미지 변환**
+**🔷 마우스 콜백 함수**
 ```python
-gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-cv.imwrite('soccer_gray.jpg', gray)  
+def draw_rectangle(event, x, y, flags, param): 
 ```
-🔹 cv.cvtColor() 함수는 이미지 색상 공간을 변환 <br>
-🔹 cv.COLOR_BGR2GRAY를 사용하여 BGR 이미지를 grayscale로 변환
+🔹 마우스의 이벤트를 처리 <br>
+```python
+if event == cv.EVENT_LBUTTONDOWN:
+        start_x, start_y = x, y
+        drawing = True  # 드래그 시작 
+```
+🔹 마우스 버튼을 누를때 시작 위치 저장 후 드래그 상태를 나타냄 <br>
+```python
+elif event == cv.EVENT_MOUSEMOVE: 
+    if drawing: 
+        temp_img = img.copy()
+        cv.rectangle(temp_img, (start_x, start_y), (x, y), (0, 255, 0), 2)
+        cv.imshow('Image', temp_img)
+```
+🔹 실시간으로 드래그하는 영역을 표시하기 위해 화면을 갱신 <br>
+🔹 cv.rectangle() : 드래그 영역을 초록색 사각형으로 표시 <br>
 <br><br>
 
 ### :octocat: 실행 결과
