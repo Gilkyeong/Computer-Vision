@@ -58,7 +58,7 @@ hist = cv.calcHist([binary], [0], None, [256], [0, 256])
 🔹None: 마스크 사용 안 함 <br>
 🔹[256]: 히스토그램의 빈(bin) 개수 <br>
 🔹[0, 256]: 픽셀 값의 범위 (0~255)
-🔹<br><br>
+<br><br>
 
 ### :octocat: 실행 결과
 
@@ -208,59 +208,28 @@ plt.show()
 ```
 
 *핵심 코드* <br>
-**🔷 변수 초기화**
+**🔷 회전 변환 행렬 생성**
 ```python
-clone = img.copy()  
-roi = None
-start_x, start_y, end_x, end_y = -1, -1, -1, -1 
-drawing = False
+angle = 45
+scale = 1.5
+M = cv.getRotationMatrix2D((cols / 2, rows / 2), angle, scale)
 ```
-🔹 clone : 원본 이미지를 보존하기 위한 복사본 <br>
-🔹 roi : 선택한 Region of Interest <br>
-🔹 start_x,y / end_x,y : 마우스 드래그 시작 및 종료 좌표 <br>
-🔹 drawing : 마우스 드래그 여부를 나타냄
+🔹 cv.getRotationMatrix2D()를 사용하여 중심점 ((cols / 2, rows / 2)): 이미지의 중심을 기준으로 이미지를 45도 회전 <br>
+🔹 변환 행렬 M은 2×3 행렬
 <br><br>
-**🔷 마우스 콜백 함수**
+**🔷 이미지 확대 계산**
 ```python
-def draw_rectangle(event, x, y, flags, param): 
+new_cols, new_rows = int(cols * 1.5), int(rows * 1.5)
 ```
-**마우스의 이벤트를 처리** <br>
-```python
-if event == cv.EVENT_LBUTTONDOWN:
-        start_x, start_y = x, y
-        drawing = True  # 드래그 시작 
-```
-🔹 마우스 버튼을 누를때 시작 위치 저장 후 드래그 상태를 나타냄 <br>
-```python
-elif event == cv.EVENT_MOUSEMOVE: 
-    if drawing: 
-        temp_img = img.copy()
-        cv.rectangle(temp_img, (start_x, start_y), (x, y), (0, 255, 0), 2)
-        cv.imshow('Image', temp_img)
-```
-🔹 실시간으로 드래그하는 영역을 표시하기 위해 화면을 갱신 <br>
-🔹 cv.rectangle() : 드래그 영역을 초록색 사각형으로 표시 <br>
-```python
-elif event == cv.EVENT_LBUTTONUP:
-    end_x, end_y = x, y
-    drawing = False
-```
-🔹 드래그 종료 
+🔹 회전 후 이미지 크기를 원본 크기의 1.5배로 설정 <br>
 <br><br>
-**ROI 추출**
+**🔷 최종 이미지 변환**
 ```python
-roi = clone[y1:y2, x1:x2].copy()
-        
-cv.rectangle(img, (x1, y1), (x2, y2), (0, 0, 255), 2)
-cv.imshow('Image', img)
-
-if roi.size > 0:
-    cv.imshow('ROI_image', roi)
+rotated_scaled_img = cv.warpAffine(img, M, (new_cols, new_rows), flags=cv.INTER_LINEAR)
 ```
-🔹 드래그된 영역의 좌표를 결정한 후 선택된 영역을 roi에 저장 <br>
-🔹 선택된 ROI를 화면에 표시
+🔹 cv.warpAffine() 함수로 이미지 회전과 확대 변환 수행 flags=cv.INTER_LINEAR <br>
+🔹 flags=cv.INTER_LINEAR로 Interpolation 설정 가능 <br>
 <br><br>
-
 ### :octocat: 실행 결과
 
 ![Figure 2025-03-18 160911](https://github.com/user-attachments/assets/74847305-37e9-4eb8-95db-578bfee899ac)
