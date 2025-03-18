@@ -33,7 +33,7 @@ cv.imshow('Color and Grayscale Image', imgs)
 cv.waitKey(0)
 cv.destroyAllWindows()
 ```
-*핵심 코드* <br>
+*핵심 코드* <br><br>
 **🔷 grayscale 이미지 변환**
 ```python
 gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
@@ -72,6 +72,8 @@ imgs = np.hstack((img, gray_3ch))
 
 ### 📄 코드 
 - Canny_video.py
+
+*전체 코드*
 ```python
 import cv2 as cv
 import sys
@@ -106,6 +108,7 @@ cap.release()
 cv.destroyAllWindows()
 ```
 
+*핵심 코드* <br><br>
 **🔷 grayscale 이미지 변환**
 ```python
  gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
@@ -140,6 +143,8 @@ reslut = np.hstack((frame, canny_edges))
 
 ### 📄 코드 
 - ROI_print.py
+
+*전체 코드*
 ```python
 import cv2 as cv
 import sys
@@ -206,6 +211,7 @@ while True:
 cv.destroyAllWindows()
 ```
 
+*핵심 코드* <br><br>
 **🔷 변수 초기화**
 ```python
 clone = img.copy()  
