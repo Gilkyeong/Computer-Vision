@@ -2,6 +2,9 @@
 
 > OpenCV를 활용하여 컬러 이미지를 불러온 후 **그레이스케일 변환 및 출력**
 ---
+BGR --> Grayscale 변환 <br>
+![image](https://github.com/user-attachments/assets/1c77deb3-3973-40a1-ba56-1719d4ea5eb1)
+
 
 ### 📄 코드 
 - Grayscale.py
