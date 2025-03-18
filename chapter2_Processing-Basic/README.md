@@ -57,7 +57,7 @@ imgs = np.hstack((img, gray_3ch))
 
 ### :octocat: 실행 결과
 
-![image](https://github.com/user-attachments/assets/233b22d6-aff2-490e-abff-1f231ca3de13)
+![Figure 2025-03-18 153753](https://github.com/user-attachments/assets/2bb7ba9c-b6b3-48f7-a414-c5c66cc6b4c1)
 <br><br>
 
 ## 🌀 문제 2 웹캠 영상에서 에지 검출
@@ -79,18 +79,31 @@ import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
 
-image = cv.imread('JohnHancocksSignature.png', cv.IMREAD_GRAYSCALE)  
+img = cv.imread('JohnHancocksSignature.png', cv.IMREAD_UNCHANGED)
 
-kernel = cv.getStructuringElement(cv.MORPH_RECT, (5, 5))
+# Otsu
+_, bin_img = cv.threshold(img[:, :, 3], 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
 
-Dilation = cv.morphologyEx(image, cv.MORPH_DILATE, kernel)
-Erosion = cv.morphologyEx(image, cv.MORPH_ERODE, kernel)
-Open = cv.morphologyEx(image, cv.MORPH_OPEN, kernel)
-Close = cv.morphologyEx(image, cv.MORPH_CLOSE, kernel)
+b = bin_img[bin_img.shape[0] // 2:bin_img.shape[0], 0:bin_img.shape[0] // 2 + 1]
 
-result = np.hstack((image, Dilation, Erosion, Open, Close))
-cv.imshow('Binary | Dilation | Erosion | Opening | Closing', result)
-cv.imwrite('morphology_result.png', result)
+se = np.uint8([[0, 0, 1, 0, 0],
+               [0, 1, 1, 1, 0],
+               [1, 1, 1, 1, 1],
+               [0, 1, 1, 1, 0],
+               [0, 0, 1, 0, 0]])
+
+# 팽창
+b_dilation = cv.dilate(b, se, iterations=1)
+# 침식
+b_erosion = cv.erode(b, se, iterations=1)
+# 닫기
+b_closing = cv.morphologyEx(b, cv.MORPH_CLOSE, se)
+# 열기
+b_opening = cv.morphologyEx(b, cv.MORPH_OPEN, se)
+
+result = np.hstack((b, b_dilation, b_erosion, b_closing, b_opening))
+
+cv.imshow('Morphological Operations', result)
 cv.waitKey(0)
 cv.destroyAllWindows()
 ```
@@ -120,7 +133,7 @@ reslut = np.hstack((frame, canny_edges))
 
 ### :octocat: 실행 결과
 
-![image](https://github.com/user-attachments/assets/c3322dd8-424c-4fc1-8d30-c4d293a28795)
+![image](https://github.com/user-attachments/assets/2803c11a-86b9-4e59-aa95-f7e252c12312)
 <br><br>
 
 ## 🌀 문제 3 마우스로 영역 선택 및 ROI 추출
@@ -218,5 +231,7 @@ if roi.size > 0:
 
 ### :octocat: 실행 결과
 
-![image](https://github.com/user-attachments/assets/235df943-48de-49b3-8a72-ee39967e0764)
+![Figure 2025-03-18 160911](https://github.com/user-attachments/assets/74847305-37e9-4eb8-95db-578bfee899ac)
+
+
 
