@@ -2,7 +2,7 @@
 
 > OpenCV를 활용하여 컬러 이미지를 불러온 후 **그레이스케일 변환 및 출력**
 ---
-#### BGR --> Grayscale 변환 <br><br>
+**BGR --> Grayscale 변환** <br><br>
 ![image](https://github.com/user-attachments/assets/1c77deb3-3973-40a1-ba56-1719d4ea5eb1)
 
 
@@ -62,6 +62,11 @@ imgs = np.hstack((img, gray_3ch))
 
 > 웹캠을 사용하여 실시간 비디오 스트림을 가져와 **각 프레임에서 Canny Edge Detection을 적용하여 에지를 검출하여 원본 영상과 함께 출력**
 ---
+
+### Canny edge
+- gradient 크기를 구하여 임계값 설정 후 edge 검출하면 윤곽선이 두껍게 표현되는 문제점을 해결
+- 비최대 억제를 사용하여 edge 검출 후 edge의 굵기를 얇게 유지
+![image](https://github.com/user-attachments/assets/895d246b-c5c5-43ae-b548-48df049b97a4)
 
 ### 📄 코드 
 - Canny_video.py
