@@ -63,6 +63,7 @@ hist = cv.calcHist([binary], [0], None, [256], [0, 256])
 ### :octocat: 실행 결과
 
 ![Figure 2025-03-18 153753](https://github.com/user-attachments/assets/2bb7ba9c-b6b3-48f7-a414-c5c66cc6b4c1)
+![Figure 2025-03-19 104527](https://github.com/user-attachments/assets/299c525a-0e42-4543-8fbd-ea62e236c905)
 <br><br>
 
 ## 🌀 문제 2 모폴로지 연산 적용하기
