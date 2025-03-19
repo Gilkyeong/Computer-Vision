@@ -73,10 +73,58 @@ hist2 = cv.calcHist([gray], [0], None, [256], [0, 256])
 > 주어진 이미지를 가지고 **Dilation, Erosion, Open, Close 모폴로지 연산을 적용**
 ---
 
-### Canny edge
-- gradient 크기를 구하여 임계값 설정 후 edge 검출하면 윤곽선이 두껍게 표현되는 문제점을 해결
-- 비최대 억제를 사용하여 edge 검출 후 edge의 굵기를 얇게 유지 <br>
-![image](https://github.com/user-attachments/assets/895d246b-c5c5-43ae-b548-48df049b97a4)
+### Morphology 연산hist2 = cv.calcHist([gray], [0], None, [256], [0, 256])
+
+plt.figure(figsize=(10, 5))
+plt.subplot(1, 2, 1)
+plt.plot(hist1)
+plt.title("Binary")   
+plt.subplot(1, 2, 2)
+plt.plot(hist2)
+plt.title("Grayscale")
+plt.show()
+```
+*핵심코드* <br>
+**🔷 grayscale 이미지 변환**
+```python
+gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+```
+🔹 이진화 처리를 위해서 BGR 이미지를 Grayscale 이미지로 변환
+<br><br>
+**🔷 이진화 처리**
+```python
+threshold = 127
+_, binary = cv.threshold(gray, threshold, 255, cv.THRESH_BINARY)
+```
+🔹 임곗값 127을 기준으로 pixel 값을 이진화 <br>
+🔹 cv.threshold(input_image, threshold, max, cv.THRESH_BINARY)
+<br><br>
+**🔷 히스토그램 계산**
+```python
+hist1 = cv.calcHist([binary], [0], None, [256], [0, 256])
+hist2 = cv.calcHist([gray], [0], None, [256], [0, 256])
+```
+🔹 cv.calcHist() 함수로 이진화된 이미지와 grayscale 이미지의 히스토그램 계산 <br>
+🔹[binary]: 입력 이미지 <br>
+🔹[0]: 첫 번째 채널(Grayscale) <br>
+🔹None: 마스크 사용 안 함 <br>
+🔹[256]: 히스토그램의 빈(bin) 개수 <br>
+🔹[0, 256]: 픽셀 값의 범위 (0~255)
+<br><br>
+
+### :octocat: 실행 결과
+
+![Figure 2025-03-19 105258](https://github.com/user-attachments/assets/37de6fa1-97ad-49e5-a9c2-4ee63a823917)
+<br><br>
+
+## 🌀 문제 2 모폴로지 연산 적용하기
+
+> 주어진 이미지를 가지고 **Dilation, Erosion, Open, Close 모폴로지 연산을 적용**
+---
+
+### Morphology 연산
+- 영상 내부의 객체의 형태와 구조를 분석한 후 처리하는 기법
+- 주로 이진화 영상에서 연 <br>
 
 ### 📄 코드 
 - Morphology.py
@@ -88,17 +136,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 image = cv.imread('JohnHancocksSignature.png', cv.IMREAD_UNCHANGED)
-
-# Otsu
+# Otsu 
 _, b_image = cv.threshold(image[:, :, 3], 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
 
 binary = b_image[b_image.shape[0] // 2:b_image.shape[0], 0:b_image.shape[0] // 2 + 1]
 
-se = np.uint8([[0, 0, 1, 0, 0],
-               [0, 1, 1, 1, 0],
-               [1, 1, 1, 1, 1],
-               [0, 1, 1, 1, 0],
-               [0, 0, 1, 0, 0]])
+se = cv.getStructuringElement(cv.MORPH_RECT, (5, 5))
 
 # 팽창
 Dilation = cv.dilate(binary, se, iterations=1)
@@ -132,14 +175,9 @@ binary = b_image[b_image.shape[0] // 2:b_image.shape[0], 0:b_image.shape[0] // 2
 <br><br>
 **🔷 구조요소 정의**
 ```python
-se = np.uint8([[0, 0, 1, 0, 0],
-               [0, 1, 1, 1, 0],
-               [1, 1, 1, 1, 1],
-               [0, 1, 1, 1, 0],
-               [0, 0, 1, 0, 0]])
+se = cv.getStructuringElement(cv.MORPH_RECT, (5, 5))
 ```
-🔹 형태학적 연산을 수행할 때 사용할 kernel 정의 <br>
-🔹 다이아몬드 형태의 kernel을 사용하여 연산 수행
+🔹 형태학적 연산을 수행할 때 사용할 5x5 kernel 정의
 <br><br>
 **🔷 Dilation**
 ```python
