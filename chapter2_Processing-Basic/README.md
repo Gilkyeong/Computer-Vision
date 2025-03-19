@@ -23,15 +23,17 @@ gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
 threshold = 127
 _, binary = cv.threshold(gray, threshold, 255, cv.THRESH_BINARY)
 
-hist = cv.calcHist([binary], [0], None, [256], [0, 256])
+hist1 = cv.calcHist([binary], [0], None, [256], [0, 256])
+hist2 = cv.calcHist([gray], [0], None, [256], [0, 256])
 
-plt.figure(figsize=(6, 4))
-plt.plot(hist, color='black')
-plt.title('Histogram')
-plt.xlabel('Pixel')
-plt.ylabel('Frequency')
+plt.figure(figsize=(10, 5))
+plt.subplot(1, 2, 1)
+plt.plot(hist1)
+plt.title("Binary")   
+plt.subplot(1, 2, 2)
+plt.plot(hist2)
+plt.title("Grayscale")
 plt.show()
-
 ```
 *핵심코드* <br>
 **🔷 grayscale 이미지 변환**
@@ -50,9 +52,10 @@ _, binary = cv.threshold(gray, threshold, 255, cv.THRESH_BINARY)
 <br><br>
 **🔷 히스토그램 계산**
 ```python
-hist = cv.calcHist([binary], [0], None, [256], [0, 256])
+hist1 = cv.calcHist([binary], [0], None, [256], [0, 256])
+hist2 = cv.calcHist([gray], [0], None, [256], [0, 256])
 ```
-🔹 cv.calcHist() 함수로 이진화된 이미지의 히스토그램 계산 <br>
+🔹 cv.calcHist() 함수로 이진화된 이미지와 grayscale 이미지의 히스토그램 계산 <br>
 🔹[binary]: 입력 이미지 <br>
 🔹[0]: 첫 번째 채널(Grayscale) <br>
 🔹None: 마스크 사용 안 함 <br>
@@ -62,8 +65,7 @@ hist = cv.calcHist([binary], [0], None, [256], [0, 256])
 
 ### :octocat: 실행 결과
 
-![Figure 2025-03-18 153753](https://github.com/user-attachments/assets/2bb7ba9c-b6b3-48f7-a414-c5c66cc6b4c1)
-![Figure 2025-03-19 104527](https://github.com/user-attachments/assets/299c525a-0e42-4543-8fbd-ea62e236c905)
+![Figure 2025-03-19 105258](https://github.com/user-attachments/assets/37de6fa1-97ad-49e5-a9c2-4ee63a823917)
 <br><br>
 
 ## 🌀 문제 2 모폴로지 연산 적용하기
