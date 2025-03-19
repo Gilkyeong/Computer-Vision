@@ -67,56 +67,6 @@ hist2 = cv.calcHist([gray], [0], None, [256], [0, 256])
 
 ![Figure 2025-03-19 105258](https://github.com/user-attachments/assets/37de6fa1-97ad-49e5-a9c2-4ee63a823917)
 <br><br>
-
-## 🌀 문제 2 모폴로지 연산 적용하기
-
-> 주어진 이미지를 가지고 **Dilation, Erosion, Open, Close 모폴로지 연산을 적용**
----
-
-### Morphology 연산hist2 = cv.calcHist([gray], [0], None, [256], [0, 256])
-
-plt.figure(figsize=(10, 5))
-plt.subplot(1, 2, 1)
-plt.plot(hist1)
-plt.title("Binary")   
-plt.subplot(1, 2, 2)
-plt.plot(hist2)
-plt.title("Grayscale")
-plt.show()
-```
-*핵심코드* <br>
-**🔷 grayscale 이미지 변환**
-```python
-gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
-```
-🔹 이진화 처리를 위해서 BGR 이미지를 Grayscale 이미지로 변환
-<br><br>
-**🔷 이진화 처리**
-```python
-threshold = 127
-_, binary = cv.threshold(gray, threshold, 255, cv.THRESH_BINARY)
-```
-🔹 임곗값 127을 기준으로 pixel 값을 이진화 <br>
-🔹 cv.threshold(input_image, threshold, max, cv.THRESH_BINARY)
-<br><br>
-**🔷 히스토그램 계산**
-```python
-hist1 = cv.calcHist([binary], [0], None, [256], [0, 256])
-hist2 = cv.calcHist([gray], [0], None, [256], [0, 256])
-```
-🔹 cv.calcHist() 함수로 이진화된 이미지와 grayscale 이미지의 히스토그램 계산 <br>
-🔹[binary]: 입력 이미지 <br>
-🔹[0]: 첫 번째 채널(Grayscale) <br>
-🔹None: 마스크 사용 안 함 <br>
-🔹[256]: 히스토그램의 빈(bin) 개수 <br>
-🔹[0, 256]: 픽셀 값의 범위 (0~255)
-<br><br>
-
-### :octocat: 실행 결과
-
-![Figure 2025-03-19 105258](https://github.com/user-attachments/assets/37de6fa1-97ad-49e5-a9c2-4ee63a823917)
-<br><br>
-
 ## 🌀 문제 2 모폴로지 연산 적용하기
 
 > 주어진 이미지를 가지고 **Dilation, Erosion, Open, Close 모폴로지 연산을 적용**
@@ -124,7 +74,7 @@ hist2 = cv.calcHist([gray], [0], None, [256], [0, 256])
 
 ### Morphology 연산
 - 영상 내부의 객체의 형태와 구조를 분석한 후 처리하는 기법
-- 주로 이진화 영상에서 연 <br>
+- 주로 이진화 영상에서 연산 <br>
 
 ### 📄 코드 
 - Morphology.py
