@@ -23,7 +23,6 @@ grad_x = cv.Sobel(gray, cv.CV_32F, 1, 0, ksize=3)
 grad_y = cv.Sobel(gray, cv.CV_32F, 0, 1, ksize=3)
 
 edge_magnitude = cv.magnitude(grad_x, grad_y)
-
 edge_strength = cv.convertScaleAbs(edge_magnitude)
 
 plt.figure(figsize=(12, 6))
@@ -44,29 +43,16 @@ plt.show()
 *핵심코드* <br>
 **🔷 grayscale 이미지 변환**
 ```python
-gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 ```
-🔹 이진화 처리를 위해서 BGR 이미지를 Grayscale 이미지로 변환
+🔹 BGR 이미지를 Grayscale 이미지로 변환
 <br><br>
-**🔷 이진화 처리**
+**🔷 Sobel edge 검출**
 ```python
-threshold = 127
-_, binary = cv.threshold(gray, threshold, 255, cv.THRESH_BINARY)
+grad_x = cv.Sobel(gray, cv.CV_32F, 1, 0, ksize=3)
+grad_y = cv.Sobel(gray, cv.CV_32F, 0, 1, ksize=3)
 ```
-🔹 임곗값 127을 기준으로 pixel 값을 이진화 <br>
-🔹 cv.threshold(input_image, threshold, max, cv.THRESH_BINARY)
-<br><br>
-**🔷 히스토그램 계산**
-```python
-hist1 = cv.calcHist([binary], [0], None, [256], [0, 256])
-hist2 = cv.calcHist([gray], [0], None, [256], [0, 256])
-```
-🔹 cv.calcHist() 함수로 이진화된 이미지와 grayscale 이미지의 히스토그램 계산 <br>
-🔹[binary]: 입력 이미지 <br>
-🔹[0]: 첫 번째 채널(Grayscale) <br>
-🔹None: 마스크 사용 안 함 <br>
-🔹[256]: 히스토그램의 빈(bin) 개수 <br>
-🔹[0, 256]: 픽셀 값의 범위 (0~255)
+🔹 cv.Sobel() 함수로 수평(x), 수직(y) 방향의 미환
 <br><br>
 
 ### :octocat: 실행 결과
@@ -123,55 +109,49 @@ plt.show()
 ```
 
 *핵심 코드* <br>
-**🔷 Otsu 알고리즘을 사용하여 이진화**
+**🔷 Grayscale 변환 후 Canny edge detection**
 ```python
-_, b_image = cv.threshold(image[:, :, 3], 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
+gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+edges = cv.Canny(gray, 100, 200)
 ```
-🔹 image[:, :, 3]: **알파 채널(투명도)**을 기준으로 이진화 <br>
-🔹 cv.threshold()로 Otsu 알고리즘을 사용해 자동으로 최적의 임계값 설정하여 이진화
+🔹 edge 검출을 위해 이미지 Grayscale 변환 <br>
+🔹 cv.Canny() 함수로 edge map 생성
 <br><br>
-**🔷 이미지 일부 선택**
+**🔷 Hough Transform을 이용해 직선 검출**
 ```python
-binary = b_image[b_image.shape[0] // 2:b_image.shape[0], 0:b_image.shape[0] // 2 + 1]
+lines = cv.HoughLinesP(edges, rho=1, theta=np.pi/180, threshold=90, minLineLength=40, maxLineGap=5)
 ```
-🔹 이미지 하단 왼쪽 부분 선택 <br>
+🔹 cv.HoughLinesP()을 이용해 직선 검출 <br>
+🔹 rho=1 : 거리 resolution (pixel 단위) <br>
+🔹 theta=np.pi/180 : 각도 resolution (1도) <br>
+🔹 threshold=90 : 임곗값 <br>
+🔹 minLineLength=40 : 최소 직선 길이 <br>
+🔹 maxLineGap=5 : 선분 간 최대 허용 거리 (연결 조건)
 <br><br>
-**🔷 구조요소 정의**
+**🔷 Hough Transform 시각화**
 ```python
-se = cv.getStructuringElement(cv.MORPH_RECT, (5, 5))
+img_lines = img.copy()
+if lines is not None:
+    for line in lines:
+        x1, y1, x2, y2 = line[0]
+        cv.line(img_lines, (x1, y1), (x2, y2), (0, 0, 255), 2))
 ```
-🔹 형태학적 연산을 수행할 때 사용할 5x5 kernel 정의
+🔹 원본 이미지에 선을 직접 그리지 않기 위해 복사본 생성 <br>
+🔹 검출된 모든 직선을 빨간색 직선으로 시각화  <br>
 <br><br>
-**🔷 Dilation**
+**🔷 matplotlib 사용을 위한 RGB image 변환**
 ```python
-Dilation = cv.dilate(binary, se, iterations=1)
+img_rgb = cv.cvtColor(img, cv.COLOR_BGR2RGB)
+img_lines_rgb = cv.cvtColor(img_lines, cv.COLOR_BGR2RGB)
 ```
-🔹 밝은 영역(흰색) 확대 → 노이즈 제거, 선 굵게 만듦 <br>
-<br><br>
-**🔷 Erosion**
-```python
-Erosion = cv.erode(binary, se, iterations=1)
-```
-🔹 어두운 영역(검은색) 확대 → 얇은 선 더 얇게 만듦 <br>
-<br><br>
-**🔷 Close**
-```python
-Close = cv.morphologyEx(binary, cv.MORPH_CLOSE, se)
-```
-🔹 팽창 후 침식 수행 <br>
-<br><br>
-**🔷 Open**
-```python
-Open = cv.morphologyEx(binary, cv.MORPH_OPEN, se)
-```
-🔹 침식 후 팽창 수행 <br>
+🔹 OpenCV는 BGR image이고 matplotlib는 RGB image이기 때문에 변환 <br>
 <br><br>
 ### :octocat: 실행 결과
 
 ![Figure 2025-03-25 154707](https://github.com/user-attachments/assets/ccb52f88-6890-44e7-bf53-1231e55932af)
-lines = cv.HoughLinesP(edges, rho=1, theta=np.pi/180, threshold=90, minLineLength=40, maxLineGap=10) <br>
+lines = cv.HoughLinesP(edges, rho=1, theta=np.pi/180, threshold=90, minLineLength=40, maxLineGap=10) <br><br>
 ![Figure 2025-03-25 154813](https://github.com/user-attachments/assets/a76c3340-c82b-4a33-9736-e0080f56f013)
-lines = cv.HoughLinesP(edges, rho=1, theta=np.pi/180, threshold=90, minLineLength=40, maxLineGap=5) <br>
+lines = cv.HoughLinesP(edges, rho=1, theta=np.pi/180, threshold=90, minLineLength=40, maxLineGap=5)
 <br><br>
 
 ## 🌀 문제 3 GrabCut을 이용한 대화식 영역 분할 및 객체 추출 
@@ -192,7 +172,6 @@ import matplotlib.pyplot as plt
 img = cv.imread('coffee cup.jpg')
 
 mask = np.zeros(img.shape[:2], np.uint8)
-
 bgdModel = np.zeros((1, 65), np.float64)
 fgdModel = np.zeros((1, 65), np.float64)
 
@@ -201,7 +180,6 @@ rect = (300, 300, 600, 500)
 cv.grabCut(img, mask, rect, bgdModel, fgdModel, 5, cv.GC_INIT_WITH_RECT)
 
 mask2 = np.where((mask == cv.GC_BGD) | (mask == cv.GC_PR_BGD), 0, 1).astype('uint8')
-
 img_result = img * mask2[:, :, np.newaxis]
 
 img_rgb = cv.cvtColor(img, cv.COLOR_BGR2RGB)
@@ -229,27 +207,40 @@ plt.show()
 ```
 
 *핵심 코드* <br>
-**🔷 회전 변환 행렬 생성**
+**🔷 변수 초기화**
 ```python
-angle = 45
-scale = 1.5
-M = cv.getRotationMatrix2D((cols / 2, rows / 2), angle, scale)
+mask = np.zeros(img.shape[:2], np.uint8)
+bgdModel = np.zeros((1, 65), np.float64)
+fgdModel = np.zeros((1, 65), np.float64)
 ```
-🔹 cv.getRotationMatrix2D()를 사용하여 중심점 ((cols / 2, rows / 2)): 이미지의 중심을 기준으로 이미지를 45도 회전 <br>
-🔹 변환 행렬 M은 2×3 행렬
+🔹 Grapcut에서 사용할 마스크와 백/포어그라운드 초기화 <br>
+🔹 pixel 분포를 학습하기 위함
 <br><br>
-**🔷 이미지 확대 계산**
+**🔷 시각화하기 위한 영역 지정**
 ```python
-new_cols, new_rows = int(cols * 1.5), int(rows * 1.5)
+rect = (300, 300, 600, 500)
 ```
-🔹 회전 후 이미지 크기를 원본 크기의 1.5배로 설정 <br>
+🔹 (300, 300, 600, 500) 범위의 사각형 <br>
 <br><br>
-**🔷 최종 이미지 변환**
+**🔷 GrapCut 수행**
 ```python
-rotated_scaled_img = cv.warpAffine(img, M, (new_cols, new_rows), flags=cv.INTER_LINEAR)
+cv.grabCut(img, mask, rect, bgdModel, fgdModel, 5, cv.GC_INIT_WITH_RECT)
 ```
-🔹 cv.warpAffine() 함수로 이미지 회전과 확대 변환 수행 flags=cv.INTER_LINEAR <br>
-🔹 flags=cv.INTER_LINEAR로 Interpolation 설정 가능 <br>
+🔹 반복 횟수를 5번으로 설정하여 더 정교하게 분리함
+<br><br>
+**🔷 Mask 적용**
+```python
+mask2 = np.where((mask == cv.GC_BGD) | (mask == cv.GC_PR_BGD), 0, 1).astype('uint8')
+img_result = img * mask2[:, :, np.newaxis]
+```
+🔹 Mask를 적용하여 배경이 제거된 이미지 생성 <br>
+<br><br>
+**🔷 matplotlib 사용을 위한 RGB image 변환**
+```python
+img_rgb = cv.cvtColor(img, cv.COLOR_BGR2RGB)
+img_result_rgb = cv.cvtColor(img_result, cv.COLOR_BGR2RGB)
+```
+🔹 OpenCV는 BGR image이고 matplotlib는 RGB image이기 때문에 변환 <br>
 <br><br>
 ### :octocat: 실행 결과
 
