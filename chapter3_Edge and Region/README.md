@@ -152,6 +152,8 @@ img_lines_rgb = cv.cvtColor(img_lines, cv.COLOR_BGR2RGB)
 lines = cv.HoughLinesP(edges, rho=1, theta=np.pi/180, threshold=90, minLineLength=40, maxLineGap=10) <br><br>
 ![Figure 2025-03-25 154813](https://github.com/user-attachments/assets/a76c3340-c82b-4a33-9736-e0080f56f013)
 lines = cv.HoughLinesP(edges, rho=1, theta=np.pi/180, threshold=90, minLineLength=40, maxLineGap=5)
+![image](https://github.com/user-attachments/assets/1693c32a-3089-427c-bbe5-f0f314c3afe3)
+lines = cv.HoughLinesP(edges, rho=1, theta=np.pi/180, threshold=90, minLineLength=15, maxLineGap=5)
 <br><br>
 
 ## 🌀 문제 3 GrabCut을 이용한 대화식 영역 분할 및 객체 추출 
