@@ -44,30 +44,38 @@ plt.show()
 ```python
 gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 ```
-🔹 BGR 이미지를 Grayscale 이미지로 변환
+🔹 SIFT는 Grayscale 이미지에서 특징점을 추출하므로 Grayscale 변환
 <br><br>
-**🔷 Sobel edge 검출**
+**🔷 SIFT 객체 생성**
 ```python
-grad_x = cv.Sobel(gray, cv.CV_32F, 1, 0, ksize=3)
-grad_y = cv.Sobel(gray, cv.CV_32F, 0, 1, ksize=3)
+sift = cv.SIFT_create(nfeatures=0)
 ```
-🔹 cv.Sobel() 함수로 수평(x), 수직(y) 방향의 미환
+🔹 nfeatures=0 : 추출할 특징점 수에 제한을 두지 않음
 <br><br>
-
+**🔷 특징점, 기술자 계산**
+```python
+kp, des = sift.detectAndCompute(gray, None)
+```
+🔹 detectAndCompute() : 특징점(keypoints)과 descriptors 동시에 계산
+<br><br>
+**🔷 특징점 시각화**
+```python
+img_kp = cv.drawKeypoints(img_rgb, kp, None, flags=cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+```
+🔹 특징점을 이미지에 시각화 <br>
+🔹 DRAW_RICH_KEYPOINTS : 크기와 방향 정보를 포함해 원으로 표시
+<br><br>
 ### :octocat: 실행 결과
 
 ![Figure 2025-04-01 152956](https://github.com/user-attachments/assets/a77544fc-b252-4442-af9c-71e016998634)
 <br><br>
-## 🌀 문제 2 SIFT를 이용한 두 영상 간 특징점 매칭칭
+## 🌀 문제 2 SIFT를 이용한 두 영상 간 특징점 매칭
 
-> Canny 에지 검출을 사용하여 에지 맵 생성 후 **허프 변환을 사용하여 이미지에서 직선 검출**
+> 주어진 이미지를 **SIFT 특징점 기반으로 매칭 수행**
 ---
 
-### Hough Transform (허프 변환)
-![image](https://github.com/user-attachments/assets/acbb191e-a6f7-450b-b035-318c6cd15582)
-
 ### 📄 코드 
-- Hough.py
+- SIFT_match.py
 
 *전체 코드*
 ```python
@@ -112,56 +120,61 @@ plt.show()
 ```
 
 *핵심 코드* <br>
-**🔷 Grayscale 변환 후 Canny edge detection**
+**🔷 ROI를 잘라내고 비교 대상을 불러옴**
 ```python
-gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-edges = cv.Canny(gray, 100, 200)
+img1 = cv.imread('mot_color70.jpg')
+img1 = img1[190:350, 440:560]
+
+img2 = cv.imread('mot_color83.jpg')
 ```
-🔹 edge 검출을 위해 이미지 Grayscale 변환 <br>
-🔹 cv.Canny() 함수로 edge map 생성
+🔹 첫번째 이미지에서 특정 ROI를 잘라냄 <br>
+🔹 비교 대상이 되는 두 번째 이미지를 불러옴
 <br><br>
-**🔷 Hough Transform을 이용해 직선 검출**
+**🔷 grayscale 이미지 변환**
 ```python
-lines = cv.HoughLinesP(edges, rho=1, theta=np.pi/180, threshold=90, minLineLength=40, maxLineGap=5)
+gray1 = cv.cvtColor(img1, cv.COLOR_BGR2GRAY)
+gray2 = cv.cvtColor(img2, cv.COLOR_BGR2GRAY)
 ```
-🔹 cv.HoughLinesP()을 이용해 직선 검출 <br>
-🔹 rho=1 : 거리 resolution (pixel 단위) <br>
-🔹 theta=np.pi/180 : 각도 resolution (1도) <br>
-🔹 threshold=90 : 임곗값 <br>
-🔹 minLineLength=40 : 최소 직선 길이 <br>
-🔹 maxLineGap=5 : 선분 간 최대 허용 거리 (연결 조건)
+🔹 SIFT 연산을 위한 두 이미지 grayscale 변환
 <br><br>
-**🔷 Hough Transform 시각화**
+**🔷 SIFT 수행**
 ```python
-img_lines = img.copy()
-if lines is not None:
-    for line in lines:
-        x1, y1, x2, y2 = line[0]
-        cv.line(img_lines, (x1, y1), (x2, y2), (0, 0, 255), 2))
+sift = cv.SIFT_create()
+kp1, des1 = sift.detectAndCompute(gray1, None)
+kp2, des2 = sift.detectAndCompute(gray2, None)
 ```
-🔹 원본 이미지에 선을 직접 그리지 않기 위해 복사본 생성 <br>
-🔹 검출된 모든 직선을 빨간색 직선으로 시각화  <br>
+🔹 SIFT를 통해 특징점과 descriptors 추출
 <br><br>
-**🔷 matplotlib 사용을 위한 RGB image 변환**
+**🔷 매칭 연산**
 ```python
-img_rgb = cv.cvtColor(img, cv.COLOR_BGR2RGB)
-img_lines_rgb = cv.cvtColor(img_lines, cv.COLOR_BGR2RGB)
+flann = cv.DescriptorMatcher_create(cv.DescriptorMatcher_FLANNBASED)
+knn_match = flann.knnMatch(des1, des2, 2)
 ```
-🔹 OpenCV는 BGR image이고 matplotlib는 RGB image이기 때문에 변환 <br>
+🔹 FLANN 기반 매칭 객체 생성 후 KNN 매칭 수행 (k=2) <br>
+🔹 각 특징점에 대해 가장 가까운 2개의 후보를 찾음
+<br><br>
+**🔷 임계값 설정**
+```python
+T = 0.7
+good_match = []
+for nearest1, nearest2 in knn_match:
+    if (nearest1.distance / nearest2.distance) < T:
+        good_match.append(nearest1)
+```
+🔹 두 후보의 거리 비율이 임계값보다 작을 때만 좋은 매칭으로 판단
 <br><br>
 ### :octocat: 실행 결과
 
 ![Figure 2025-04-01 165852](https://github.com/user-attachments/assets/31428164-9548-42ba-be5f-338a7b7044e4)
 <br><br>
 
-## 🌀 문제 3 호모그래피를 이용한 이미지 정합합
+## 🌀 문제 3 호모그래피를 이용한 이미지 정합
 
-> 사용자가 지정한 영역을 바탕으로 **GrabCut 알고리즘을 사용하여 객체 추출**
-> 객체 추출 결과를 마스크 형태로 시각화 후 원본 이미지에서 배경을 제거하고 객체만 남은 이미지를 출력
+> SIFT 특징점을 사용하여 두 이미지 간 대응점을 찾고 **호모그래피를 계산하여 하나의 이미지 위에 정렬**
 ---
 
 ### 📄 코드 
-- Grabcut.py
+- SIFT_Homography.py
 
 *전체 코드*
 ```python
@@ -210,40 +223,60 @@ cv.destroyAllWindows()
 ```
 
 *핵심 코드* <br>
-**🔷 변수 초기화**
+**🔷 Grayscale 이미지 변환**
 ```python
-mask = np.zeros(img.shape[:2], np.uint8)
-bgdModel = np.zeros((1, 65), np.float64)
-fgdModel = np.zeros((1, 65), np.float64)
+gray1 = cv.cvtColor(img1, cv.COLOR_BGR2GRAY)
+gray2 = cv.cvtColor(img2, cv.COLOR_BGR2GRAY)
 ```
-🔹 Grapcut에서 사용할 마스크와 백/포어그라운드 초기화 <br>
-🔹 pixel 분포를 학습하기 위함
+🔹 SIFT 연산을 위해 Grayscale 이미지 변환
 <br><br>
-**🔷 시각화하기 위한 영역 지정**
+**🔷 SIFT 수행**
 ```python
-rect = (300, 300, 600, 500)
+sift = cv.SIFT_create()
+kp1, des1 = sift.detectAndCompute(gray1, None)
+kp2, des2 = sift.detectAndCompute(gray2, None)
 ```
-🔹 (300, 300, 600, 500) 범위의 사각형 <br>
+🔹 두 이미지에서 특징점과 desscriptor 추출 <br>
 <br><br>
-**🔷 GrapCut 수행**
+**🔷 KNN matching 수행**
 ```python
-cv.grabCut(img, mask, rect, bgdModel, fgdModel, 5, cv.GC_INIT_WITH_RECT)
+bf = cv.BFMatcher(cv.NORM_L2, crossCheck=False)
+matches = bf.knnMatch(des1, des2, k=2)
 ```
-🔹 반복 횟수를 5번으로 설정하여 더 정교하게 분리함
+🔹 BFMatcher(Brute-Force Matcher)를 사용하여 destriptors 간 KNN 매칭(k=2)을 수행
 <br><br>
-**🔷 Mask 적용**
+**🔷 Matching 필터링**
 ```python
-mask2 = np.where((mask == cv.GC_BGD) | (mask == cv.GC_PR_BGD), 0, 1).astype('uint8')
-img_result = img * mask2[:, :, np.newaxis]
+good_matches = []
+ratio_thresh = 0.7
+for m, n in matches:
+    if m.distance < ratio_thresh * n.distance:
+        good_matches.append(m)
 ```
-🔹 Mask를 적용하여 배경이 제거된 이미지 생성 <br>
+🔹 잘못된 매칭을 제거하여 신뢰성을 높임 <br>
 <br><br>
-**🔷 matplotlib 사용을 위한 RGB image 변환**
+**🔷 실제 좌표 추출**
 ```python
-img_rgb = cv.cvtColor(img, cv.COLOR_BGR2RGB)
-img_result_rgb = cv.cvtColor(img_result, cv.COLOR_BGR2RGB)
+src_pts = np.float32([ kp1[m.queryIdx].pt for m in good_matches ]).reshape(-1, 1, 2)
+dst_pts = np.float32([ kp2[m.trainIdx].pt for m in good_matches ]).reshape(-1, 1, 2)
 ```
-🔹 OpenCV는 BGR image이고 matplotlib는 RGB image이기 때문에 변환 <br>
+🔹 매칭점에서 실제 좌표를 추출하여 호모그래피 계산을 위한 데이터로 변환 <br>
+<br><br>
+**🔷 호모그래피 추정**
+```python
+H, mask = cv.findHomography(src_pts, dst_pts, cv.RANSAC)
+```
+🔹 RANSAC 기반으로 호모그래피 행렬을 추정 <br>
+<br><br>
+**🔷 이미지 정렬 후 시각적 표시**
+```python
+warped_img = cv.warpPerspective(img1, H, (w2, h2))
+
+img_matches = cv.drawMatches(img1, kp1, img2, kp2, good_matches, None,
+                             flags=cv.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
+```
+🔹 추정된 호모그래피를 이용하여 img1, img2에 정렬되도록 변형 <br>
+🔹 매칭 결과를 시각화
 <br><br>
 ### :octocat: 실행 결과
 
