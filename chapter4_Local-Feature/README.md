@@ -70,7 +70,6 @@ img_kp = cv.drawKeypoints(img_rgb, kp, None, flags=cv.DRAW_MATCHES_FLAGS_DRAW_RI
 ![Figure 2025-04-01 152956](https://github.com/user-attachments/assets/a77544fc-b252-4442-af9c-71e016998634)
 <br> SIFT는 특징점을 검출할 때 단순히 x,y만 찾지 않고 특징점 scale과 방향도 함께 예측
 <br> --> Scale의 크기에 따라 원의 크기가 결정됨 (큰 스케일에서는 큰 원, 작은 스케일에서는 작은 원)
-SIFT
 <br><br>
 ## 🌀 문제 2 SIFT를 이용한 두 영상 간 특징점 매칭
 
