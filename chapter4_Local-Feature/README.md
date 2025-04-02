@@ -182,10 +182,10 @@ for nearest1, nearest2 in knn_match:
 ```python
 import cv2 as cv
 import numpy as np
+import matplotlib.pyplot as plt
 
 img1 = cv.imread('img2.jpg')
-img2 = cv.imread('img3.jpg')   
-
+img2 = cv.imread('img3.jpg')
 
 gray1 = cv.cvtColor(img1, cv.COLOR_BGR2GRAY)
 gray2 = cv.cvtColor(img2, cv.COLOR_BGR2GRAY)
@@ -194,34 +194,54 @@ sift = cv.SIFT_create()
 kp1, des1 = sift.detectAndCompute(gray1, None)
 kp2, des2 = sift.detectAndCompute(gray2, None)
 
-bf = cv.BFMatcher(cv.NORM_L2, crossCheck=False)
+bf = cv.BFMatcher()
 matches = bf.knnMatch(des1, des2, k=2)
-
 good_matches = []
-ratio_thresh = 0.7
 for m, n in matches:
-    if m.distance < ratio_thresh * n.distance:
+    if m.distance < 0.7 * n.distance:
         good_matches.append(m)
 
-print("matching num :", len(good_matches))
+src_pts = np.float32([kp1[m.queryIdx].pt for m in good_matches]).reshape(-1, 1, 2)
+dst_pts = np.float32([kp2[m.trainIdx].pt for m in good_matches]).reshape(-1, 1, 2)
 
-src_pts = np.float32([ kp1[m.queryIdx].pt for m in good_matches ]).reshape(-1, 1, 2)
-dst_pts = np.float32([ kp2[m.trainIdx].pt for m in good_matches ]).reshape(-1, 1, 2)
+H_pan, mask_pan = cv.findHomography(dst_pts, src_pts, cv.RANSAC, 5.0)
+h1, w1 = img1.shape[:2]
+h2, w2 = img2.shape[:2]
+corners_img2 = np.float32([[0, 0], [0, h2], [w2, h2], [w2, 0]]).reshape(-1, 1, 2)
+warped_corners = cv.perspectiveTransform(corners_img2, H_pan)
+all_corners = np.concatenate((warped_corners, np.float32([[0, 0], [0, h1], [w1, h1], [w1, 0]]).reshape(-1, 1, 2)), axis=0)
+[xmin, ymin] = np.int32(all_corners.min(axis=0).ravel() - 0.5)
+[xmax, ymax] = np.int32(all_corners.max(axis=0).ravel() + 0.5)
+translation = [-xmin, -ymin]
+T = np.array([[1, 0, translation[0]], [0, 1, translation[1]], [0, 0, 1]])
+panorama = cv.warpPerspective(img2, T @ H_pan, (xmax - xmin, ymax - ymin))
+panorama[translation[1]:translation[1] + h1, translation[0]:translation[0] + w1] = img1
 
-H, mask = cv.findHomography(src_pts, dst_pts, cv.RANSAC)
+bf2 = cv.BFMatcher(cv.NORM_L2, crossCheck=False)
+matches2 = bf2.knnMatch(des1, des2, k=2)
+good_matches2 = []
+ratio_thresh = 0.7
+for m, n in matches2:
+    if m.distance < ratio_thresh * n.distance:
+        good_matches2.append(m)
+print("matching num :", len(good_matches2))
+src_pts2 = np.float32([kp1[m.queryIdx].pt for m in good_matches2]).reshape(-1, 1, 2)
+dst_pts2 = np.float32([kp2[m.trainIdx].pt for m in good_matches2]).reshape(-1, 1, 2)
+H_match, mask_match = cv.findHomography(src_pts2, dst_pts2, cv.RANSAC)
+warped_img = cv.warpPerspective(img2, H_match, (w1, h1))
+img_matches = cv.drawMatches(img1, kp1, warped_img, kp2, good_matches2, None, flags=cv.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
 
-h2, w2 = img1.shape[:2]
-warped_img = cv.warpPerspective(img2, H, (w2, h2))
+panorama_rgb = cv.cvtColor(panorama, cv.COLOR_BGR2RGB)
+img_matches_rgb = cv.cvtColor(img_matches, cv.COLOR_BGR2RGB)
 
-cv.imshow("original", img1)
-cv.imshow("Warped images", warped_img)
-
-img_matches = cv.drawMatches(img1, kp1, warped_img, kp2, good_matches, None,
-                             flags=cv.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
-cv.imshow("matching result", img_matches)
-
-cv.waitKey(0)
-cv.destroyAllWindows()
+plt.figure(figsize=(10, 5))
+plt.subplot(1, 2, 1)
+plt.imshow(panorama_rgb)
+plt.axis('off')
+plt.subplot(1, 2, 2)
+plt.imshow(img_matches_rgb)
+plt.axis('off')
+plt.show()
 ```
 
 *핵심 코드* <br>
@@ -282,6 +302,6 @@ img_matches = cv.drawMatches(img1, kp1, warped_img, kp2, good_matches, None,
 <br><br>
 ### :octocat: 실행 결과
 
-![image](https://github.com/user-attachments/assets/fb731dee-ba71-4563-a38a-437c373dab5d)
-![image](https://github.com/user-attachments/assets/6b4b535d-a12e-4048-aac0-3c1e9e246667)
+![image](https://github.com/user-attachments/assets/7c7525dc-8db0-40aa-bf7e-2dcca67914f6)
+
 
