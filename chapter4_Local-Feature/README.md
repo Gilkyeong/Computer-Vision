@@ -210,13 +210,13 @@ dst_pts = np.float32([ kp2[m.trainIdx].pt for m in good_matches ]).reshape(-1, 1
 
 H, mask = cv.findHomography(src_pts, dst_pts, cv.RANSAC)
 
-h2, w2 = img2.shape[:2]
-warped_img = cv.warpPerspective(img1, H, (w2, h2))
+h2, w2 = img1.shape[:2]
+warped_img = cv.warpPerspective(img2, H, (w2, h2))
 
-cv.imshow("original", img2)
+cv.imshow("original", img1)
 cv.imshow("Warped images", warped_img)
 
-img_matches = cv.drawMatches(img2, kp1, warped_img, kp2, good_matches, None,
+img_matches = cv.drawMatches(img1, kp1, warped_img, kp2, good_matches, None,
                              flags=cv.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
 cv.imshow("matching result", img_matches)
 
@@ -272,9 +272,9 @@ H, mask = cv.findHomography(src_pts, dst_pts, cv.RANSAC)
 <br><br>
 **🔷 이미지 정렬 후 시각적 표시**
 ```python
-warped_img = cv.warpPerspective(img1, H, (w2, h2))
-
-img_matches = cv.drawMatches(img2, kp1, warped_img, kp2, good_matches, None,
+h2, w2 = img1.shape[:2]
+warped_img = cv.warpPerspective(img2, H, (w2, h2))
+img_matches = cv.drawMatches(img1, kp1, warped_img, kp2, good_matches, None,
                              flags=cv.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
 ```
 🔹 추정된 호모그래피를 이용하여 img1, img2에 정렬되도록 변형 <br>
@@ -282,5 +282,5 @@ img_matches = cv.drawMatches(img2, kp1, warped_img, kp2, good_matches, None,
 <br><br>
 ### :octocat: 실행 결과
 
-![Uploading image.png…]()
+![image](https://github.com/user-attachments/assets/fb731dee-ba71-4563-a38a-437c373dab5d)
 
