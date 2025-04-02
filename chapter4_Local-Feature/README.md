@@ -183,8 +183,8 @@ for nearest1, nearest2 in knn_match:
 import cv2 as cv
 import numpy as np
 
-img1 = cv.imread('img1.jpg')
-img2 = cv.imread('img2.jpg')   
+img1 = cv.imread('img2.jpg')
+img2 = cv.imread('img3.jpg')   
 
 
 gray1 = cv.cvtColor(img1, cv.COLOR_BGR2GRAY)
@@ -216,7 +216,7 @@ warped_img = cv.warpPerspective(img1, H, (w2, h2))
 cv.imshow("original", img2)
 cv.imshow("Warped images", warped_img)
 
-img_matches = cv.drawMatches(img1, kp1, img2, kp2, good_matches, None,
+img_matches = cv.drawMatches(img2, kp1, warped_img, kp2, good_matches, None,
                              flags=cv.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
 cv.imshow("matching result", img_matches)
 
@@ -274,7 +274,7 @@ H, mask = cv.findHomography(src_pts, dst_pts, cv.RANSAC)
 ```python
 warped_img = cv.warpPerspective(img1, H, (w2, h2))
 
-img_matches = cv.drawMatches(img1, kp1, img2, kp2, good_matches, None,
+img_matches = cv.drawMatches(img2, kp1, warped_img, kp2, good_matches, None,
                              flags=cv.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
 ```
 🔹 추정된 호모그래피를 이용하여 img1, img2에 정렬되도록 변형 <br>
@@ -282,4 +282,5 @@ img_matches = cv.drawMatches(img1, kp1, img2, kp2, good_matches, None,
 <br><br>
 ### :octocat: 실행 결과
 
-![스크린샷 2025-04-01 173214](https://github.com/user-attachments/assets/601d4fa9-79e7-430a-acdb-fd6a9ad6bb6b)
+![Uploading image.png…]()
+
