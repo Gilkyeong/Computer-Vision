@@ -283,4 +283,5 @@ img_matches = cv.drawMatches(img1, kp1, warped_img, kp2, good_matches, None,
 ### :octocat: 실행 결과
 
 ![image](https://github.com/user-attachments/assets/fb731dee-ba71-4563-a38a-437c373dab5d)
+![image](https://github.com/user-attachments/assets/6b4b535d-a12e-4048-aac0-3c1e9e246667)
 
