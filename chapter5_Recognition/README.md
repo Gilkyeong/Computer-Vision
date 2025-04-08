@@ -209,7 +209,7 @@ knn_match = flann.knnMatch(des1, des2, 2)
 res = cnn.evaluate(x_test, y_test, verbose=0)
 print('acc =', res[1]*100)
 ```
-🔹 
+🔹  <br>
 ![image](https://github.com/user-attachments/assets/9f5199c4-ff25-44ed-8169-fe9229ab754f) <br>
 **🔷 이미지 classification**
 ```python
