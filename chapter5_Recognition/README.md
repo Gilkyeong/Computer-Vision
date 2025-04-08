@@ -425,5 +425,4 @@ print(f"\n acc : {test_acc:.4f}")
 ![image](https://github.com/user-attachments/assets/89578959-a5bb-40d1-b6b9-1c2402491678)
 <br><br>
 ### :octocat: 실행 결과
-![스크린샷 2025-04-08 165415](https://github.com/user-attachments/assets/3e827e65-b681-4262-b8b3-f7b369802f7d)
 
