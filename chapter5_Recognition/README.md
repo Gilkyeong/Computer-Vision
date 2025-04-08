@@ -305,11 +305,13 @@ print("Index :", predicted_class_idx)
 print("Class name :", class_names[predicted_class_idx])
 ```
 🔹 dog.jpg를 불러와서 학습된 cnn 모델을 사용하여 이미지 classification<br>
+불러온 이미지 <br>
+![dog](https://github.com/user-attachments/assets/37d0e5c0-83b9-4296-8987-22578bf6111d) <br>
+성능 <br>
 ![스크린샷 2025-04-08 172139](https://github.com/user-attachments/assets/ac32b121-21ea-4102-8a6e-6d48c84a8112)
 <br><br>
 ### :octocat: 실행 결과
 ![image](https://github.com/user-attachments/assets/d9c19ef9-f72d-4327-afc3-117acd25c23e)
-![image](https://github.com/user-attachments/assets/90fdd4e7-a956-47da-a57b-2e82413cb981)
 <br><br>
 
 ## 🌀 문제 3 전이 학습을 활용한 이미지 분류기 개선
