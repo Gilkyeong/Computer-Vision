@@ -288,7 +288,8 @@ res = cnn.evaluate(x_test, y_test, verbose=0)
 print('acc =', res[1]*100)
 ```
 🔹 Train이 완료된 후 test data를 사용해 accuracy 평가 <br><br>
-![image](https://github.com/user-attachments/assets/9f5199c4-ff25-44ed-8169-fe9229ab754f) <br>
+![image](https://github.com/user-attachments/assets/9f5199c4-ff25-44ed-8169-fe9229ab754f)
+<br><br>
 **🔷 이미지 classification**
 ```python
 test_img = load_img("dog.jpg", target_size=(32,32))
@@ -324,84 +325,103 @@ print("Class name :", class_names[predicted_class_idx])
 
 *전체 코드*
 ```python
-import cv2 as cv 
-import numpy as np
-from tensorflow.keras.applications.resnet50 import ResNet50,preprocess_input,decode_predictions
+import tensorflow as tf
+from tensorflow.keras import layers, models
+from tensorflow.keras.applications import VGG16
+from tensorflow.keras.datasets import cifar10
 
-model=ResNet50(weights='imagenet')
+gpus = tf.config.list_physical_devices('GPU')
 
-img=cv.imread('rabbit.jpg') 
-x=np.reshape(cv.resize(img,(224,224)),(1,224,224,3))   
-x=preprocess_input(x)
+(x_train, y_train), (x_test, y_test) = cifar10.load_data()
 
-preds=model.predict(x)
-top5=decode_predictions(preds,top=5)[0]
-print('예측 결과:',top5)
+def preprocess(x, y):
+    x = tf.image.resize(x, [224, 224]) / 255.0
+    return x, y
 
-for i in range(5):
-    cv.putText(img,top5[i][1]+':'+str(top5[i][2]),(10,20+i*20),cv.FONT_HERSHEY_SIMPLEX,0.5,(255,255,255),1)
+BATCH_SIZE = 16
 
-cv.imshow('Recognition result',img)
+train_ds = tf.data.Dataset.from_tensor_slices((x_train, y_train))
+train_ds = train_ds.map(preprocess, num_parallel_calls=tf.data.AUTOTUNE)
+train_ds = train_ds.shuffle(5000).batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
 
-cv.waitKey()
-cv.destroyAllWindows()
+test_ds = tf.data.Dataset.from_tensor_slices((x_test, y_test))
+test_ds = test_ds.map(preprocess, num_parallel_calls=tf.data.AUTOTUNE)
+test_ds = test_ds.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
+
+base_model = VGG16(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
+base_model.trainable = False
+
+model = models.Sequential([
+    base_model,
+    layers.Flatten(),
+    layers.Dense(256, activation='relu'),
+    layers.Dropout(0.5),
+    layers.Dense(10, activation='softmax')
+])
+
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+history = model.fit(train_ds, epochs=50, validation_data=test_ds)
+
+test_loss, test_acc = model.evaluate(test_ds)
+print(f"\n acc : {test_acc:.4f}")
 ```
 
 *핵심 코드* <br>
-**🔷 Grayscale 이미지 변환**
+**🔷 데이터셋 로드**
 ```python
-gray1 = cv.cvtColor(img1, cv.COLOR_BGR2GRAY)
-gray2 = cv.cvtColor(img2, cv.COLOR_BGR2GRAY)
+(x_train, y_train), (x_test, y_test) = cifar10.load_data()
+
+def preprocess(x, y):
+    x = tf.image.resize(x, [224, 224]) / 255.0
+    return x, y
 ```
-🔹 SIFT 연산을 위해 Grayscale 이미지 변환
+🔹 VGG16의 input에 맞추기 위해 224x224로 resize 후 0-1 범위로 정규화
 <br><br>
-**🔷 SIFT 수행**
+**🔷 VGG16 base model 로드**
 ```python
-sift = cv.SIFT_create()
-kp1, des1 = sift.detectAndCompute(gray1, None)
-kp2, des2 = sift.detectAndCompute(gray2, None)
+base_model = VGG16(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
+base_model.trainable = False
 ```
-🔹 두 이미지에서 특징점과 desscriptor 추출 <br>
+🔹 ImageNet에 대해 사전 학습된 VGG16 모델을 불러옴 <br>
+🔹 include_top=False를 통해 VGG16 모델의 마지막 부분은 제거하고 input size 224×224로 맞춤 <br>
+🔹 base_model.trainable = False로 사전 학습된 weight가 학습 중에 업데이트되지 않도록 freeze <br>
 <br><br>
-**🔷 KNN matching 수행**
+**🔷 새로운 layer 설계**
 ```python
-bf = cv.BFMatcher(cv.NORM_L2, crossCheck=False)
-matches = bf.knnMatch(des1, des2, k=2)
+model = models.Sequential([
+    base_model,
+    layers.Flatten(),
+    layers.Dense(256, activation='relu'),
+    layers.Dropout(0.5),
+    layers.Dense(10, activation='softmax')
+])
 ```
-🔹 BFMatcher(Brute-Force Matcher)를 사용하여 destriptors 간 KNN 매칭(k=2)을 수행
+🔹 Flatten layer : 2차원 feature map을 1차원 벡터로 변환 <br>
+🔹 첫번째 Dense layer : Unit : 256, activation function : relu <br>
+🔹 Dropout (0.5): Overfitting을 방지하기 위해 랜덤하게 50%의 뉴런을 제거 <br>
+🔹 두번째 Dense layer : Unit : 10, activation function : softmax
 <br><br>
-**🔷 Matching 필터링**
+**🔷 Model 컴파일**
 ```python
-good_matches = []
-ratio_thresh = 0.7
-for m, n in matches:
-    if m.distance < ratio_thresh * n.distance:
-        good_matches.append(m)
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+history = model.fit(train_ds, epochs=50, validation_data=test_ds)
 ```
-🔹 잘못된 매칭을 제거하여 신뢰성을 높임 <br>
+🔹 model.compile : 모델 컴파일 <br>
+   loss function : sparse_categorical_crossentropy, Optimizer : Adam <br>
+🔹 model.fit : 모델 학습 <br>
+   epochs : 50
 <br><br>
-**🔷 실제 좌표 추출**
+**🔷 정확도 측정**
 ```python
-src_pts = np.float32([ kp1[m.queryIdx].pt for m in good_matches ]).reshape(-1, 1, 2)
-dst_pts = np.float32([ kp2[m.trainIdx].pt for m in good_matches ]).reshape(-1, 1, 2)
+test_loss, test_acc = model.evaluate(test_ds)
+print(f"\n acc : {test_acc:.4f}")
 ```
-🔹 매칭점에서 실제 좌표를 추출하여 호모그래피 계산을 위한 데이터로 변환 <br>
-<br><br>
-**🔷 호모그래피 추정**
-```python
-H, mask = cv.findHomography(src_pts, dst_pts, cv.RANSAC)
-```
-🔹 RANSAC 기반으로 호모그래피 행렬을 추정 <br>
-<br><br>
-**🔷 이미지 정렬 후 시각적 표시**
-```python
-h2, w2 = img1.shape[:2]
-warped_img = cv.warpPerspective(img2, H, (w2, h2))
-img_matches = cv.drawMatches(img1, kp1, warped_img, kp2, good_matches, None,
-                             flags=cv.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
-```
-🔹 추정된 호모그래피를 이용하여 img1, img2에 정렬되도록 변형 <br>
-🔹 매칭 결과를 시각화 <br>
+🔹 Train이 완료된 후 test data를 사용해 accuracy 평가 <br><br>
 ![image](https://github.com/user-attachments/assets/89578959-a5bb-40d1-b6b9-1c2402491678)
 <br><br>
 ### :octocat: 실행 결과
