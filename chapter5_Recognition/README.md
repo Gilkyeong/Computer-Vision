@@ -210,7 +210,7 @@ res = cnn.evaluate(x_test, y_test, verbose=0)
 print('acc =', res[1]*100)
 ```
 🔹 
-![image](https://github.com/user-attachments/assets/9f5199c4-ff25-44ed-8169-fe9229ab754f)
+![image](https://github.com/user-attachments/assets/9f5199c4-ff25-44ed-8169-fe9229ab754f) <br>
 **🔷 이미지 classification**
 ```python
 test_img = load_img("dog.jpg", target_size=(32,32))
@@ -226,7 +226,7 @@ class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer',
 print("Index :", predicted_class_idx)
 print("Class name :", class_names[predicted_class_idx])
 ```
-🔹 
+🔹 <br>
 ![스크린샷 2025-04-08 172139](https://github.com/user-attachments/assets/ac32b121-21ea-4102-8a6e-6d48c84a8112)
 <br><br>
 ### :octocat: 실행 결과
@@ -321,7 +321,8 @@ img_matches = cv.drawMatches(img1, kp1, warped_img, kp2, good_matches, None,
                              flags=cv.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
 ```
 🔹 추정된 호모그래피를 이용하여 img1, img2에 정렬되도록 변형 <br>
-🔹 매칭 결과를 시각화
+🔹 매칭 결과를 시각화 <br>
+![image](https://github.com/user-attachments/assets/89578959-a5bb-40d1-b6b9-1c2402491678)
 <br><br>
 ### :octocat: 실행 결과
 ![스크린샷 2025-04-08 165415](https://github.com/user-attachments/assets/3e827e65-b681-4262-b8b3-f7b369802f7d)
