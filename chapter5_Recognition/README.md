@@ -46,47 +46,74 @@ plt.ylabel('accuracy')
 plt.legend(['train','test'])
 plt.grid()
 plt.show()
-
-plt.plot(hist.history['loss'])
-plt.plot(hist.history['val_loss'])
-plt.title('Loss graph')
-plt.xlabel('epochs')
-plt.ylabel('loss')
-plt.legend(['train','test'])
-plt.grid()
-plt.show()
 ```
 *핵심코드* <br>
-**🔷 grayscale 이미지 변환**
+**🔷 데이터셋 로드**
 ```python
-gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+(x_train,y_train),(x_test,y_test)=ds.mnist.load_data()
 ```
-🔹 SIFT는 Grayscale 이미지에서 특징점을 추출하므로 Grayscale 변환
+🔹 tensorflow.keras.datasets 모듈을 사용하여 MNIST 데이터셋을 불러옴 <br>
+🔹 MNIST : 손글씨 숫자 이미지(28×28 크기), Train data : 60,000개 Test data : 10,000개로 구성
 <br><br>
-**🔷 SIFT 객체 생성**
+**🔷 Flattening**
 ```python
-sift = cv.SIFT_create(nfeatures=0)
+x_train = x_train.reshape(60000, 784)
+x_test = x_test.reshape(10000, 784)
 ```
-🔹 nfeatures=0 : 추출할 특징점 수에 제한을 두지 않음
+🔹 각 이미지는 28×28 행렬 형태 <br>
+🔹 nn input으로 사용하기 위해 (60000, 784)와 (10000, 784)의 1차원 배열로 변환
 <br><br>
-**🔷 특징점, 기술자 계산**
+**🔷 Nomalization**
 ```python
-kp, des = sift.detectAndCompute(gray, None)
+x_train = x_train.astype(np.float32) / 255.0
+x_test = x_test.astype(np.float32) / 255.0
 ```
-🔹 detectAndCompute() : 특징점(keypoints)과 descriptors 동시에 계산
+🔹 0-1 사이의 값으로 정규화
 <br><br>
-**🔷 정확도 측정**
+**🔷 label One-Hot Encoding**
 ```python
-img_kp = cv.drawKeypoints(img_rgb, kp, None, flags=cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+y_train = tf.keras.utils.to_categorical(y_train, 10)
+y_test = tf.keras.utils.to_categorical(y_test, 10)
 ```
-🔹 특징점을 이미지에 시각화 <br>
-🔹 DRAW_RICH_KEYPOINTS : 크기와 방향 정보를 포함해 원으로 표시 <br>
+🔹 10개의 클래스 확률을 반환하도록 변환 <br>
+<br><br>
+**🔷 Model 구조 설계**
+```python
+dmlp=Sequential()
+dmlp.add(Dense(units=1024,activation='relu',input_shape=(784,)))
+dmlp.add(Dense(units=512,activation='relu'))
+dmlp.add(Dense(units=512,activation='relu'))
+dmlp.add(Dense(units=10,activation='softmax'))
+```
+🔹 Keras의 Sequential 모델을 사용해 layer를 쌓음 <br>
+🔹 Dense layer <br>
+   - 첫번째 layer
+     Unit : 1024, activation function : relu, input : 784
+   - 두번째, 세번째 layer
+     Unit : 512, activation function : relu
+   - output layer
+     Unit : 10 (10개 class), activation function : softmax (각 클래스에 대한 확률 값 출력)
+<br><br>
+**🔷 Model 컴파일**
+```python
+dmlp.compile(loss='categorical_crossentropy',optimizer=Adam(learning_rate=0.0001),metrics=['accuracy'])
+hist=dmlp.fit(x_train,y_train,batch_size=128,epochs=30,validation_data=(x_test,y_test),verbose=2)
+print('acc =', dmlp.evaluate(x_test,y_test,verbose=0)[1]*100)
+```
+🔹 dmlp.compile : 모델 컴파일 <br>
+   - loss function : categorical_crossentropy, Optimizer : Adam, learning rate : 0.0001
+🔹 dmlp.fit : 모델 학습 <br>
+   - batch size : 128, epochs : 30, verbose : 2 (각 epochs에 대한 log 출력)
+<br><br>
+**🔷 모델 평가**
+```python
+print('acc =', dmlp.evaluate(x_test, y_test, verbose=0)[1] * 100)
+```
+🔹 Train이 완료된 후 test data를 사용해 accuracy 평가 <br>
 ![스크린샷 2025-04-08 162656](https://github.com/user-attachments/assets/06d48ed4-ece3-415d-9d32-44c3b7f52a5b)
 <br><br>
 ### :octocat: 실행 결과
-
 ![mlpacc](https://github.com/user-attachments/assets/44c99f1f-3298-4d63-84ab-726f35b49525)
-![mlploss](https://github.com/user-attachments/assets/d8f61503-93e9-4e1d-bce9-52807eb33be2)
 <br><br>
 ## 🌀 문제 2 CIFAR-10 datasets을 활용한 CNN 모델 구축
 
@@ -142,15 +169,6 @@ plt.plot(hist.history['accuracy'])
 plt.plot(hist.history['val_accuracy'])
 plt.title('Accuracy graph')
 plt.ylabel('Accuracy')
-plt.xlabel('Epoch')
-plt.legend(['Train', 'Validation'])
-plt.grid()
-plt.show()
-
-plt.plot(hist.history['loss'])
-plt.plot(hist.history['val_loss'])
-plt.title('Loss graph')
-plt.ylabel('Loss')
 plt.xlabel('Epoch')
 plt.legend(['Train', 'Validation'])
 plt.grid()
