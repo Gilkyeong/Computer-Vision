@@ -422,7 +422,6 @@ test_loss, test_acc = model.evaluate(test_ds)
 print(f"\n acc : {test_acc:.4f}")
 ```
 🔹 Train이 완료된 후 test data를 사용해 accuracy 평가 <br><br>
-![image](https://github.com/user-attachments/assets/89578959-a5bb-40d1-b6b9-1c2402491678)
 <br><br>
 ### :octocat: 실행 결과
 
