@@ -19,7 +19,7 @@ while True:
     
     if res.multi_face_landmarks:
         for landmarks in res.multi_face_landmarks:
-            mp_drawing.draw_landmarks(image=frame,landmark_list=landmarks,connections=mp_mesh.FACEMESH_CONTOURS,landmark_drawing_spec=mp_drawing.DrawingSpec(thickness=1,circle_radius=1))
+          mp_drawing.draw_landmarks(image=frame,landmark_list=landmarks,connections=mp_mesh.FACEMESH_CONTOURS,landmark_drawing_spec=mp_drawing.DrawingSpec(thickness=1,circle_radius=1))
         
     cv.imshow('MediaPipe Face Mesh',cv.flip(frame,1))
     if cv.waitKey(5)==ord('q'):
