@@ -1,5 +1,5 @@
 ## 🌀 문제 1 SORT 알고리즘을 활용한 다중 객체 추적기 구현
-> YOLOv3을 사용하여 Detection 후 **Sort 알고리즘을 사용하여 Tracking**
+> YOLOv3을 사용하여 Detection 후 **Sort 알고리즘을 사용하여 Tracking** <br>
 > sort.py 안에 구현된 sort 알고리즘을 사용
 ---
 **SORT 알고리즘** <br><br>
