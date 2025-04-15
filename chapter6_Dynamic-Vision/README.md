@@ -172,6 +172,7 @@ cv.putText(frame, str(track_id), (x1+10, y1+40), cv.FONT_HERSHEY_PLAIN, 3, color
 > Mediapipe의 FaceMesh모듈을 사용하여 얼굴의 468개의 랜드마크를 추출하고 실시간 영상에 시각화하는 프로그램 구현
 ---
 **Mediapipe** <br><br>
+현재 python 3.10 이하 버전만 호환 가능 (python 3.12는 제공되고 있지 않음)
 ![image](https://github.com/user-attachments/assets/1e486389-e7a7-40ec-8b4c-e89990c12233)
 
 ### 📄 코드 
