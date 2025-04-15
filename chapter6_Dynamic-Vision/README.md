@@ -2,8 +2,15 @@
 > YOLOv3을 사용하여 Detection 후 **Sort 알고리즘을 사용하여 Tracking** <br>
 > sort.py 안에 구현된 sort 알고리즘을 사용
 ---
-**SORT 알고리즘** <br><br>
-
+**SORT(Simple Online and Real-time Tracking) 알고리즘** <br>
+모든 단계를 단순 알고리즘으로 처리하여 속도 빠름 <br>
+1) 검출 단계 : 현재 순간 t의 frame에 faster RCNN 적용, 추적 대상 물체 : 사람, 나머지는 모두 버림 <br>
+2) 특징 추출 단계 : 이전 순간 t-1에서 결정해 놓은 목표물의 위치 정보와 이동 이력 정보를 사용 <br>
+                    이전에 이동했던 정보로 현재 순간을 예측하여 박스에 저장
+3) 거리 계산 단계 : 1,2단계에서 얻은 박스의 IoU를 계산하고 1 - IoU 를 구해 거리 행렬을 채움 <br>
+4) 쌍 맺기 단계 : 거리 행렬을 이용해 매칭 쌍을 찾음 <br>
+			 Hungarian algorithm을 적용하여 최적의 매칭 쌍을 찾음 <br>
+			* 최소 비용이 되도록 작업자에게 과업을 할당하는 최적화 알고리즘 <br>
 
 ### 📄 코드 
 - Sort_Tracking.py
@@ -165,9 +172,10 @@ cv.putText(frame, str(track_id), (x1+10, y1+40), cv.FONT_HERSHEY_PLAIN, 3, color
 > Mediapipe의 FaceMesh모듈을 사용하여 얼굴의 468개의 랜드마크를 추출하고 실시간 영상에 시각화하는 프로그램 구현
 ---
 **Mediapipe** <br><br>
+![image](https://github.com/user-attachments/assets/1e486389-e7a7-40ec-8b4c-e89990c12233)
 
 ### 📄 코드 
-- CIFAR10-CNN.py
+- Mediapipe_face.py
 
 *전체 코드*
 ```python
