@@ -202,8 +202,8 @@ for nearest1,nearest2 in bf_match:
    if (nearest1.distance/nearest2.distance)<T:
        good_match.append(nearest1)
 
-points1=np.float32([kp1[gm.queryIdx].pt for gm in good_match])
-points2=np.float32([kp2[gm.trainIdx].pt for gm in good_match])
+p1=np.float32([kp1[gm.queryIdx].pt for gm in good_match])
+p2=np.float32([kp2[gm.trainIdx].pt for gm in good_match])
 
 H, mask = cv.findHomography(points2, points1, cv.RANSAC)
 
