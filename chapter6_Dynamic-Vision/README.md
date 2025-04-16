@@ -161,7 +161,7 @@ if len(persons)==0:
 cv.rectangle(frame, (x1, y1), (x2, y2), colors[track_id], 2)
 cv.putText(frame, str(track_id), (x1+10, y1+40), cv.FONT_HERSHEY_PLAIN, 3, colors[track_id], 2)
 ```
-🔹 고유한 색상과 ID를 사용하여 frame 위에 시각적 표시
+🔹 고유한 색상과 ID를 사용하여 frame 위에 시각적 표시 <br>
 🔹 각 Tracking된 대상에 고유한 번호를 부여
 <br><br>
 ### :octocat: 실행 결과
