@@ -250,42 +250,43 @@ kp2, des2 = sift.detectAndCompute(gray2, None)
 <br><br>
 **🔷 KNN matching 수행**
 ```python
-bf = cv.BFMatcher(cv.NORM_L2, crossCheck=False)
-matches = bf.knnMatch(des1, des2, k=2)
+bf_matcher = cv.BFMatcher(cv.NORM_L2, crossCheck=False)
+bf_match = bf_matcher.knnMatch(des1, des2, 2)
 ```
 🔹 BFMatcher(Brute-Force Matcher)를 사용하여 destriptors 간 KNN 매칭(k=2)을 수행
 <br><br>
 **🔷 Matching 필터링**
 ```python
-good_matches = []
-ratio_thresh = 0.7
-for m, n in matches:
-    if m.distance < ratio_thresh * n.distance:
-        good_matches.append(m)
+T = 0.7
+good_match = []
+for nearest1, nearest2 in bf_match:
+   if (nearest1.distance / nearest2.distance) < T:
+       good_match.append(nearest1)
 ```
 🔹 잘못된 매칭을 제거하여 신뢰성을 높임 <br>
 <br><br>
 **🔷 실제 좌표 추출**
 ```python
-src_pts = np.float32([ kp1[m.queryIdx].pt for m in good_matches ]).reshape(-1, 1, 2)
-dst_pts = np.float32([ kp2[m.trainIdx].pt for m in good_matches ]).reshape(-1, 1, 2)
+p1 = np.float32([kp1[gm.queryIdx].pt for gm in good_match])
+p2 = np.float32([kp2[gm.trainIdx].pt for gm in good_match])
 ```
 🔹 매칭점에서 실제 좌표를 추출하여 호모그래피 계산을 위한 데이터로 변환 <br>
 <br><br>
 **🔷 호모그래피 추정**
 ```python
-H, mask = cv.findHomography(src_pts, dst_pts, cv.RANSAC)
+H, mask = cv.findHomography(p1, p2, cv.RANSAC)
 ```
 🔹 RANSAC 기반으로 호모그래피 행렬을 추정 <br>
 <br><br>
 **🔷 이미지 정렬 후 시각적 표시**
 ```python
-h2, w2 = img1.shape[:2]
-warped_img = cv.warpPerspective(img2, H, (w2, h2))
-img_matches = cv.drawMatches(img1, kp1, warped_img, kp2, good_matches, None,
-                             flags=cv.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
+warp = cv.warpPerspective(img2, H, (w1 + w2, h2))
+warp[0:h1, 0:w1] = img1
+
+img_match = cv.drawMatches(img1, kp1, img2, kp2, good_match, None, flags=cv.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
+
 ```
-🔹 추정된 호모그래피를 이용하여 img1, img2에 정렬되도록 변형 <br>
+🔹 추정된 호모그래피를 이용하여 image 2개를 Warping하여 파노라마 생성 <br>
 🔹 매칭 결과를 시각화
 <br><br>
 ### :octocat: 실행 결과
